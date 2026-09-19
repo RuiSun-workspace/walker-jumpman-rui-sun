@@ -67,14 +67,62 @@ func _physics_process(delta: float) -> void:
 	position.x = maxf(position.x, 10.0)
 	queue_redraw()
 
+## BEACON: a one-eyed lighthouse robot. Original Godot vector drawing, no imported art.
+## The collider is an 18x28 box at offset (0,-14), so local space is x[-9,9] y[-28,0].
+## Every opaque part below stays inside that box. The only thing that leaves it is the
+## projected light cone, drawn translucent so it reads as emitted light, not as body.
 func _draw() -> void:
 	var ink := Color("25354a")
-	var blue := Color("287baf")
-	var stride := sin(float(tick) * 0.7) * 2.0 if is_on_floor() and absf(velocity.x) > 8 else 0.0
-	draw_rect(Rect2(-9, -27, 18, 24), ink)
-	draw_rect(Rect2(-7, -25, 14, 20), blue)
-	draw_rect(Rect2(-10, -18, 20, 4), Color("ef875f"))
-	draw_rect(Rect2(-6, -4, 5, 4 + stride), ink)
-	draw_rect(Rect2(2, -4, 5, 4 - stride), ink)
-	draw_rect(Rect2(1 if facing > 0 else -6, -24, 5, 5), Color("fff9e9"))
-	draw_rect(Rect2(4 if facing > 0 else -6, -23, 2, 3), ink)
+	var steel := Color("6d7f8e")
+	var steel_hi := Color("9fb1bd")
+	var lamp := Color("ffc94a")
+	var lamp_hot := Color("fff6d8")
+	var airborne := not is_on_floor()
+	var rolling := is_on_floor() and absf(velocity.x) > 8
+	var stride := sin(float(tick) * 0.7) * 2.0 if rolling else 0.0
+	var eye := Vector2(facing * 1.8, -19.5)
+
+	# The tracks tuck up on a jump, so the hull has to be drawn down to meet them or
+	# the body reads as floating above a detached base.
+	var base_top := -4.0 if airborne else -6.0
+
+	# Light cone. Widens and reaches further while airborne; purely decorative.
+	var reach := 22.0 if airborne else 16.0
+	var spread := 8.0 if airborne else 5.5
+	draw_colored_polygon(PackedVector2Array([eye,
+		Vector2(eye.x + facing * reach, eye.y - spread),
+		Vector2(eye.x + facing * reach, eye.y + spread)]), Color(1.0, 0.79, 0.29, 0.13))
+
+	# Antenna: trails behind the facing direction, straightens up on a jump.
+	var tip := Vector2((-facing * 0.9 if airborne else -facing * 3.0) + stride * 0.5, -26.5)
+	draw_line(Vector2(0, -23.0), tip, ink, 2.0)
+	draw_circle(tip, 1.5, lamp_hot if airborne else steel_hi)
+
+	# Lamp housing, tapered outward toward the base like a lighthouse gallery.
+	draw_colored_polygon(PackedVector2Array([Vector2(-6,-24), Vector2(6,-24), Vector2(7,-15), Vector2(-7,-15)]), ink)
+	draw_colored_polygon(PackedVector2Array([Vector2(-5,-23), Vector2(5,-23), Vector2(6,-16), Vector2(-6,-16)]), steel)
+
+	# The single eye. Its offset and pupil are the primary left/right facing cue.
+	draw_circle(eye, 4.2, ink)
+	draw_circle(eye, 3.4, Color("ffe08a") if airborne else lamp)
+	draw_circle(Vector2(eye.x + facing * 1.0, eye.y), 1.5, ink)
+	draw_circle(Vector2(eye.x - facing * 1.4, eye.y - 1.4), 0.9, lamp_hot)
+
+	# Collar and tapered hull. The hull bottom follows base_top so the two always meet.
+	draw_rect(Rect2(-8, -15, 16, 2), ink)
+	draw_colored_polygon(PackedVector2Array([Vector2(-6,-14), Vector2(6,-14), Vector2(8.5,base_top), Vector2(-8.5,base_top)]), ink)
+	draw_colored_polygon(PackedVector2Array([Vector2(-5,-13), Vector2(5,-13), Vector2(7.2,base_top-1), Vector2(-7.2,base_top-1)]), steel)
+	draw_rect(Rect2(-2, -12, 4, 2), lamp)
+
+	# Tracked base. The top edge tucks up on a jump, but the bottom edge stays on y=0
+	# so the drawn silhouette always ends exactly where the collider ends.
+	draw_rect(Rect2(-9, base_top, 18, -base_top), ink)
+	draw_rect(Rect2(-8, base_top + 1, 16, -base_top - 2), steel)
+	var roll: float = fposmod(position.x * 0.6, 5.0) if rolling else 0.0
+	for i in range(4):
+		var tx: float = -7.5 + float(i) * 5.0 + roll
+		if tx > 7.5:
+			tx -= 20.0
+		draw_line(Vector2(tx, base_top + 1.5), Vector2(tx, -1.5), ink, 1.0)
+	draw_circle(Vector2(-5.0, base_top / 2.0), 1.6, steel_hi)
+	draw_circle(Vector2(5.0, base_top / 2.0), 1.6, steel_hi)
