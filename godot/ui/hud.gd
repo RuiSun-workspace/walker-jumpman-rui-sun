@@ -18,10 +18,14 @@ func _draw() -> void:
 		return
 	draw_rect(Rect2(0,0,640,74), Color("f6f3ec"))
 	text_at("WALKER / JUMPMAN", Vector2(22,27), 18)
-	text_at("FIRST STEPS", Vector2(497,27), 14)
+	text_at(String(game.level.title).to_upper(), Vector2(497,27), 14)
 	text_at("A/D or arrows: move     Space: jump     R: retry     Esc: pause", Vector2(22,50), 13)
 	draw_rect(Rect2(22,63,596,3), Color("daddd6"))
-	var progress: float = clampf((game.player.position.x-64)/852, 0, 1)
+	# The starter divided by a literal 852, which was finish.x - spawn.x for the original
+	# 960-wide level. Extending the course would have filled the bar well before the flag.
+	var start_x: float = float(game.level.spawn[0])
+	var span: float = maxf(1.0, float(game.level.finish[0]) - start_x)
+	var progress: float = clampf((game.player.position.x - start_x) / span, 0, 1)
 	draw_rect(Rect2(22,63,596*progress,3), Color("287c68"))
 	draw_rect(Rect2(0,335,640,25), Color("f6f3ec"))
 	text_at("No lives. Just another try.", Vector2(22,353), 13)
@@ -37,7 +41,7 @@ func _draw() -> void:
 	draw_rect(Rect2(163,103,318,159), Color("fffdf7"))
 	draw_rect(Rect2(163,103,318,4), Color("ef875f"))
 	var title := "First steps. Real jumps."
-	var detail := "Cross two gaps. Clear the spikes. Reach the flag."
+	var detail := "Cross two gaps. Clear the spikes. Climb the tower."
 	var button := "ENTER  /  START"
 	if game.state == game.State.PAUSED:
 		title = "Take a breath."

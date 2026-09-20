@@ -39,12 +39,17 @@ func run() -> void:
 	game.start_session()
 	var route = Route.new()
 	var gap_captured := false
+	var tower_captured := false
 	for i in range(900):
 		route.step(game.player)
 		await step()
 		if not gap_captured and game.player.position.x > 463 and game.player.position.y < 300:
 			await capture("03-jump")
 			gap_captured = true
+		# Beacon Tower: airborne between step one and step two, over the chasm.
+		if not tower_captured and game.player.position.x > 1230 and game.player.position.y < 270:
+			await capture("05-tower")
+			tower_captured = true
 		if game.state != Game.State.PLAYING: break
 	assert(game.state == Game.State.COMPLETE, "Input route did not complete")
 	await capture("04-complete")

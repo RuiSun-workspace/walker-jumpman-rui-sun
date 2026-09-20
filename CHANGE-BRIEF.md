@@ -262,5 +262,90 @@ exactly once each time and the retry returns to the original spawn, not to the t
 
 ## 8. Revision log
 
-*Empty at time of writing. Revisions are appended here with a date; nothing above this line
-is edited.*
+*Revisions are appended here with a date; nothing above this line is edited.*
+
+---
+
+### R1 — 2026-09-19 — The two-route fork in §3 is geometrically impossible. Extension is challenge-led instead.
+
+**What §3 promised:** an inner climb and an outer climb converging on a summit, so the player
+picks a risk level. **What I built:** a single ascending tower over a bottomless chasm.
+
+**Why.** Before placing any platform I worked out the vertical budget, and it rules the fork out:
+
+- The player collider is 28 px tall; platforms are 16 px thick.
+- A player standing on a platform with top `T` occupies `T-28 … T`.
+- A platform 40 px above it occupies `T-40 … T-24`.
+- Those overlap on `T-28 … T-24`, so **two vertically adjacent platforms may not overlap in x**
+  or the player standing on the lower one is embedded in the upper one.
+- To clear that overlap the lanes must be ≥ 56 px apart vertically — but the measured peak rise
+  is **53.3 px**, so nothing can ever jump from the lower lane to the upper one.
+
+Two stacked lanes therefore cannot both branch from a common platform and cannot merge. Making
+them side by side instead needs roughly 400 px of extra width per lane, which is a bigger level
+than this assignment window supports. This is a measured limit of the starter's own tuning, not
+a shortcut: §4 forbids raising jump strength, and raising it is the only thing that would make
+the fork fit.
+
+**What replaced it.** The assignment asks for "a clear player decision **or challenge**". The
+extension is now a challenge: a chasm with no floor that cannot be crossed at ground level,
+crossed by five jumps up a tower where every miss is fatal, and a spike gate on the summit
+between the last landing and the flag.
+
+| Element | Rect | Note |
+| --- | --- | --- |
+| Approach ground | `[1008, 320, 168, 64]` | 48 px gap from the original course |
+| Pedestal | `[1104, 296, 72, 24]` | new landing 1 |
+| Step one | `[1192, 280, 64, 16]` | new landing 2, over the chasm |
+| Step two | `[1304, 240, 64, 16]` | new landing 3, over the chasm |
+| Summit | `[1416, 200, 184, 16]` | new landing 4 |
+| Beacon gate | hazard `[1480, 184, 24, 16]` | spikes between the last landing and the flag |
+| Finish | `[1520, 144, 24, 56]` | relocated from `[916, 264, 24, 56]` |
+
+Level width 960 → 1600. Four new landings that require jumps; the requirement was two.
+
+### R2 — 2026-09-19 — Take-off windows are measured, not calculated.
+
+`godot/tests/verify_reach.gd` sweeps the take-off x of the **real player** in 2 px steps with the
+shipped tuning and records where it actually lands. Measured windows:
+
+| Jump | Window |
+| --- | --- |
+| starter gap 1 (unchanged) | x 394…446, 54 px |
+| starter gap 2 (unchanged) | x 666…734, 70 px |
+| third slab → approach | x 890…956, 68 px |
+| approach → pedestal | x 1010…1094, 86 px |
+| pedestal → step one | x 1096…1162, 68 px |
+| step one → step two | x 1212…1264, 54 px |
+| step two → summit | x 1324…1376, 54 px |
+| summit → over the beacon gate | x 1408…1466, 60 px |
+| chasm walkable at ground level? | 0 of 40 take-offs reached the far side |
+
+§3's predicted "26.7 – 80 px landing window for a +40 px step" was close: the measured windows for
+the +40 steps are 54 px. The route fixture's new jump marks were then chosen from this table rather
+than guessed.
+
+### R3 — 2026-09-19 — The second spike cluster moved from the chasm lip to the summit.
+
+§3 planned a spike bed at the base of the climb. Measurement killed that placement: spikes on the
+approach at the chasm lip cut the take-off window for the pedestal jump from 86 px down to 38 px,
+and the player's landing point coming off the previous gap sits *on* that boundary, so the jump
+became a coin flip through no skill of the player's. Two other positions were tried on paper and
+failed the same way — the 168 px approach is simply too short to hold a hazard and a +24 jump.
+
+The spikes moved to `[1480, 184, 24, 16]` on the summit, between the final landing and the flag.
+Measured window to clear them: 60 px, in line with every other jump. The new section still has both
+failure modes the assignment asks to demonstrate — a fall and a hazard.
+
+### R4 — 2026-09-19 — Two bugs found in my own verification script, not in the level.
+
+Recorded because a green report that was green for the wrong reason is worth as much as a red one.
+
+1. `attempt()` treated any state other than `PLAYING` as a death. Touching the goal sets
+   `COMPLETE`, so the summit jump — which lands on the flag — was reported as **36 of 36 fatal**.
+   The jump was always fine.
+2. The "is the chasm walkable" gate allowed a 9 px collider overhang and used a target starting at
+   x = 1176, the exact right edge of the approach ground. Landing back where it started counted as
+   crossing. Target moved to x = 1200.
+
+Both were fixed in the test, not in the level. Level geometry did not change as a result of either.

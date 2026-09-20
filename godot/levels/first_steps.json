@@ -1,11 +1,20 @@
 {
   "id": "first-steps",
   "title": "First Steps",
-  "scope": "Control/retry slice, not the proposed full three-zone course",
-  "width": 960,
+  "scope": "Starter control/retry slice (x 0-960) plus the Beacon Tower extension (x 1008-1600)",
+  "width": 1600,
   "fall_y": 430,
   "spawn": [64, 320],
-  "solids": [[0, 320, 448, 64], [512, 320, 224, 64], [784, 320, 176, 64], [160, 304, 48, 16], [576, 288, 48, 32]],
-  "hazards": [[320, 304, 24, 16]],
-  "finish": [916, 264, 24, 56]
+  "solids": [[0, 320, 448, 64], [512, 320, 224, 64], [784, 320, 176, 64], [160, 304, 48, 16], [576, 288, 48, 32],
+             [1008, 320, 168, 64], [1104, 296, 72, 24], [1192, 280, 64, 16], [1304, 240, 64, 16], [1416, 200, 184, 16]],
+  "hazards": [[320, 304, 24, 16], [1480, 184, 24, 16]],
+  "finish": [1520, 144, 24, 56],
+  "hills": [100, 470, 770, 1080, 1400],
+  "labels": [
+    {"text": "01 / GET MOVING", "at": [33, 251], "size": 15},
+    {"text": "Read the landing. Then jump.", "at": [33, 273], "size": 13},
+    {"text": "02 / MIND THE GAP", "at": [474, 227], "size": 15},
+    {"text": "03 / BEACON TOWER", "at": [1012, 251], "size": 15},
+    {"text": "No floor below. Read every landing.", "at": [1012, 273], "size": 13}
+  ]
 }

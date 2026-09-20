@@ -176,18 +176,24 @@ func _unhandled_input(event: InputEvent) -> void:
 			elif state == State.PAUSED:
 				set_paused(false)
 
+## Everything here is derived from the level JSON. The starter drew the grid to a literal
+## 961, the hills to a literal [100, 470, 770], every spike between the literals 320 and
+## 304, and the finish pole between the literals 320 and 250, so widening the level or
+## lifting a hazard off the ground would have drawn them in the wrong place while the
+## physics stayed correct. Nothing below reads a coordinate that is not in the level data.
 func _draw() -> void:
 	if level.is_empty():
 		return
 	var font := ThemeDB.fallback_font
 	var ink := Color("25354a")
+	var w: int = int(level.width)
 	# All visual assets are original Godot vector drawing, not recovered art.
-	draw_rect(Rect2(-400, -200, 1800, 900), Color("f6f3ec"))
-	for x in range(0, 961, 32):
+	draw_rect(Rect2(-400, -200, float(w) + 800.0, 900), Color("f6f3ec"))
+	for x in range(0, w + 1, 32):
 		draw_line(Vector2(x, 80), Vector2(x, 320), Color("e7e5df"), 1)
 	for y in range(96, 321, 32):
-		draw_line(Vector2(0, y), Vector2(960, y), Color("e7e5df"), 1)
-	for x in [100, 470, 770]:
+		draw_line(Vector2(0, y), Vector2(w, y), Color("e7e5df"), 1)
+	for x in level.hills:
 		draw_colored_polygon(PackedVector2Array([Vector2(x-90,320),Vector2(x+50,180),Vector2(x+190,320)]), Color("e4e8e3"))
 	for entry in level.solids:
 		var r := Rect2(entry[0], entry[1], entry[2], entry[3])
@@ -196,13 +202,20 @@ func _draw() -> void:
 		for x in range(int(r.position.x)+12, int(r.end.x), 24):
 			draw_line(Vector2(x, r.position.y+12), Vector2(x+7, r.position.y+19), Color("405166"), 1)
 	for entry in level.hazards:
+		# Mirrors _add_area() exactly: three triangles, each 8 wide with its apex at +4,
+		# spaced size.x / 3 apart, apex on the hazard's own top edge and base on its bottom.
+		var top: float = float(entry[1])
+		var base: float = top + float(entry[3])
 		for i in range(3):
-			var x: float = entry[0] + i*8
-			draw_colored_polygon(PackedVector2Array([Vector2(x,320),Vector2(x+4,304),Vector2(x+8,320)]), Color("d24e42"))
-	var finish_x: float = level.finish[0]
-	draw_line(Vector2(finish_x+3, 320), Vector2(finish_x+3, 250), ink, 3)
-	draw_colored_polygon(PackedVector2Array([Vector2(finish_x+5,250),Vector2(finish_x+32,260),Vector2(finish_x+5,274)]), Color("287c68"))
-	draw_string(font, Vector2(33, 251), "01 / GET MOVING", HORIZONTAL_ALIGNMENT_LEFT, -1, 15, ink)
-	draw_string(font, Vector2(33, 273), "Read the landing. Then jump.", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, ink)
-	draw_string(font, Vector2(474, 227), "02 / MIND THE GAP", HORIZONTAL_ALIGNMENT_LEFT, -1, 15, ink)
-	draw_string(font, Vector2(878, 225), "FINISH", HORIZONTAL_ALIGNMENT_LEFT, -1, 15, ink)
+			var x: float = float(entry[0]) + float(i) * float(entry[2]) / 3.0
+			draw_colored_polygon(PackedVector2Array([Vector2(x,base),Vector2(x+4,top),Vector2(x+8,base)]), Color("d24e42"))
+	# Finish marker, anchored to the finish rectangle so it follows the goal Area2D.
+	var f: Array = level.finish
+	var fx: float = float(f[0])
+	var fy: float = float(f[1])
+	var foot: float = fy + float(f[3])
+	draw_line(Vector2(fx+3, foot), Vector2(fx+3, fy-14), ink, 3)
+	draw_colored_polygon(PackedVector2Array([Vector2(fx+5,fy-14),Vector2(fx+32,fy-4),Vector2(fx+5,fy+10)]), Color("287c68"))
+	draw_string(font, Vector2(fx-38, fy-39), "FINISH", HORIZONTAL_ALIGNMENT_LEFT, -1, 15, ink)
+	for entry in level.labels:
+		draw_string(font, Vector2(entry.at[0], entry.at[1]), entry.text, HORIZONTAL_ALIGNMENT_LEFT, -1, int(entry.size), ink)
