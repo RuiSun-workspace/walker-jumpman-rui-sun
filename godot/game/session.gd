@@ -17,6 +17,11 @@ var death_reason: String = ""
 var last_finish_time: float = 0.0
 var test_mode: bool = false
 var contact_settle_ticks: int = 0
+## Index of the hazard that just killed the player, or -1. Drawing only.
+var death_flash: int = -1
+## Framing only. The starter used a constant +100 lead; see _update_camera().
+const CAMERA_LEAD := 80.0
+const CAMERA_EASE := 7.0
 
 func _ready() -> void:
 	process_physics_priority = 10
@@ -102,9 +107,11 @@ func restart_attempt() -> void:
 	# Area2D overlaps are physics-step snapshots. Discard pre-teleport contacts
 	# until the broadphase has observed the reset, preventing a phantom second death.
 	contact_settle_ticks = 2
+	death_flash = -1
 	player.reset_at(Vector2(level.spawn[0], level.spawn[1]))
 	player.enabled = true
 	camera.position = Vector2(320, 180)
+	queue_redraw()
 
 func set_paused(value: bool) -> void:
 	if value and state == State.PLAYING:
@@ -129,6 +136,12 @@ func resolve_contacts(fatal: bool, finished: bool) -> void:
 		retry_remaining = 0.55
 		player.enabled = false
 		player.velocity = Vector2.ZERO
+		# Visual only. The 0.55 s window, the death conditions and the deaths counter are
+		# untouched; the player simply stops redrawing itself once enabled is false, so the
+		# session has to drive the frames. That is the whole of the change.
+		player.dying = true
+		player.dying_tick = 0
+		queue_redraw()
 	elif finished:
 		state = State.COMPLETE
 		last_finish_time = elapsed
@@ -138,21 +151,41 @@ func resolve_contacts(fatal: bool, finished: bool) -> void:
 func _physics_process(delta: float) -> void:
 	if state == State.DYING:
 		retry_remaining -= delta
+		# player._physics_process returns on its first line while disabled, so advancing
+		# this counter and asking for a redraw cannot resume the simulation. It only lets
+		# the death drawing animate during the retry window the starter already had.
+		player.dying_tick += 1
+		player.queue_redraw()
+		queue_redraw()
 		if retry_remaining <= 0:
 			restart_attempt()
 	elif state == State.PLAYING:
 		elapsed += delta
 		var fatal := player.position.y > float(level.fall_y)
 		death_reason = "Missed the landing" if fatal else "Watch the spikes"
-		for hazard in hazard_areas:
-			fatal = fatal or hazard.overlaps_body(player)
+		death_flash = -1
+		for i in range(hazard_areas.size()):
+			if hazard_areas[i].overlaps_body(player):
+				fatal = true
+				death_flash = i
 		if contact_settle_ticks > 0:
 			contact_settle_ticks -= 1
 		else:
 			resolve_contacts(fatal, goal.overlaps_body(player))
-		camera.position.x = clampf(player.position.x + 100, 320, float(level.width) - 320)
+		_update_camera(delta)
 	if is_instance_valid(hud):
 		hud.queue_redraw()
+
+## The starter snapped the camera to player.x + 100 every frame. A constant rightward lead
+## points the wrong way while backing up to line up a jump, and it drives the camera into
+## the right clamp 100 px earlier than it has to. The lead now follows facing, and the
+## camera eases toward its target so it glides to a stop at a level edge instead of locking
+## hard. Framing only: nothing in the physics, timing or collision path reads the camera.
+## camera.y stays fixed. The tower tops out at y=200 and the flag at y=130, both inside the
+## viewport, and panning vertically would only expose space above the level.
+func _update_camera(delta: float) -> void:
+	var target := clampf(player.position.x + player.facing * CAMERA_LEAD, 320.0, float(level.width) - 320.0)
+	camera.position.x = lerpf(camera.position.x, target, 1.0 - exp(-CAMERA_EASE * delta))
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.echo:
@@ -201,14 +234,20 @@ func _draw() -> void:
 		draw_rect(Rect2(r.position, Vector2(r.size.x, 4)), Color("438e7d"))
 		for x in range(int(r.position.x)+12, int(r.end.x), 24):
 			draw_line(Vector2(x, r.position.y+12), Vector2(x+7, r.position.y+19), Color("405166"), 1)
-	for entry in level.hazards:
+	for h in range(level.hazards.size()):
+		var entry: Array = level.hazards[h]
 		# Mirrors _add_area() exactly: three triangles, each 8 wide with its apex at +4,
 		# spaced size.x / 3 apart, apex on the hazard's own top edge and base on its bottom.
 		var top: float = float(entry[1])
 		var base: float = top + float(entry[3])
+		# The spikes that just killed the player flash for the retry window, so the cause of
+		# death is visible on the level and not only as text on the HUD.
+		var spike := Color("d24e42")
+		if state == State.DYING and h == death_flash and is_instance_valid(player) and (player.dying_tick / 3) % 2 == 0:
+			spike = Color("ff9270")
 		for i in range(3):
 			var x: float = float(entry[0]) + float(i) * float(entry[2]) / 3.0
-			draw_colored_polygon(PackedVector2Array([Vector2(x,base),Vector2(x+4,top),Vector2(x+8,base)]), Color("d24e42"))
+			draw_colored_polygon(PackedVector2Array([Vector2(x,base),Vector2(x+4,top),Vector2(x+8,base)]), spike)
 	# Finish marker, anchored to the finish rectangle so it follows the goal Area2D.
 	var f: Array = level.finish
 	var fx: float = float(f[0])

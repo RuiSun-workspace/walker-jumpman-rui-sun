@@ -388,3 +388,54 @@ Beacon. Wrapped marks are now skipped. This had been present since the character
 Full suite after all three: `test_game.gd` 25/0, `test_keyboard.gd` 9/0, `verify_reach.gd` 9/0.
 The route now completes in 576 ticks and ends standing at `(1582.213, 199.9253)` — on the
 summit, at the flag — rather than in mid-air.
+
+### R6 — 2026-09-19 — Declared changes 5.3 and 5.4 are implemented, with new checks.
+
+**5.4, death feedback.** Implemented exactly as scoped: drawing only. `player.dying` and
+`player.dying_tick` are set by `resolve_contacts()` and cleared by `reset_at()`, and nothing
+in `_physics_process` reads either. `player._physics_process` returns on its first line while
+disabled, so the session drives the frames instead. On death the light cone goes out, the eye
+drops to a dim red flickering on a three-tick beat, the chest lamp goes dark, the hull darkens,
+and the mast snaps. **No part of this moves the silhouette**, so the art still matches the
+collider on the frame Beacon dies. The hazard that actually caused the death also flashes, so
+the cause is legible on the level instead of only as HUD text — that was §1 Observation B's
+real complaint.
+
+*Prediction 7.6 said this would break `pause-freezes` or `twenty-retries`.* It did not.
+`pause-freezes` still reports position `(64.0, 295.9253)` and elapsed `0.1333`, and
+`twenty-retries` still reports `max_retry_ticks: 34`, unchanged from the `be3c32f` baseline.
+The prediction was reasonable and simply wrong.
+
+**5.3, camera.** The constant `+100` lead became a facing-aware `±80` with exponential easing
+toward the target. `camera.y` is deliberately left fixed: the tower tops out at y = 200 and the
+flag at y = 130, both inside the viewport, and panning vertically would only expose space above
+the level.
+
+Worth recording: the measured lead while running is **not** 80. A camera easing at 7/s toward a
+target moving at 160 px/s settles at a lag of `v/k` = 22.9 px, so the check reports
+`lead_right: 53.49` and `lead_left: -57.10`. The nominal number is not the number on screen.
+
+**New checks, added rather than substituted** (`test_game.gd` is now 29 checks, up from 25):
+
+| Check | Observed |
+| --- | --- |
+| `death-visual-is-drawing-only` | `dying: true`, `dying_tick: 11`, `flash: 0`, `moved: false`, still disabled |
+| `death-visual-cleared-on-respawn` | `dying: false`, `dying_tick: 0`, `flash: -1`, state PLAYING |
+| `camera-lead-follows-facing` | `lead_right: 53.49`, `lead_left: -57.10` |
+| `camera-stays-inside-level` | min `320.0`, max `1343.9995` against a limit of `1344.0` |
+
+The camera approaches its clamp asymptotically and never crosses it, which is what easing buys
+over the starter's hard snap.
+
+**A defect found by looking, not by testing.** The first version folded the mast to
+`(-facing * 5.5, -21)`, which is *inside* the lamp housing — and the housing is drawn later, so
+the broken antenna was completely invisible. Every check still passed. The mast is now drawn
+after the housing, hinged back over the gallery with its tip at x = ±7.4, still inside the
+collider box. This is the second defect this project that only a rendered frame could catch;
+the first was the detached tread mark in R5.3.
+
+**Camera honesty note.** Widening the level did not eliminate §1 Observation A. The clamp pins
+the camera at `width - 320 = 1344`, which the facing-aware lead reaches at player x ≈ 1264, so
+the last ~320 px of the climb still has a static camera. That is correct behaviour — the
+alternative is framing space outside the level — but it is a real limitation and belongs in
+TEST-REPORT.md rather than being described as fixed.

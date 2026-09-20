@@ -14,6 +14,10 @@ var test_control: bool = false
 var test_axis: float = 0.0
 var test_jump_pressed: bool = false
 var test_jump_held: bool = false
+## Drawing state only. Set by the session on a fatal contact and cleared by reset_at().
+## Nothing in _physics_process reads these, so they cannot affect movement or collision.
+var dying: bool = false
+var dying_tick: int = 0
 
 func _ready() -> void:
 	name = "Player"
@@ -36,6 +40,8 @@ func reset_at(spawn: Vector2) -> void:
 	require_jump_release = true
 	test_jump_pressed = false
 	jumps = 0
+	dying = false
+	dying_tick = 0
 	queue_redraw()
 
 func _physics_process(delta: float) -> void:
@@ -73,30 +79,43 @@ func _physics_process(delta: float) -> void:
 ## projected light cone, drawn translucent so it reads as emitted light, not as body.
 func _draw() -> void:
 	var ink := Color("25354a")
-	var steel := Color("6d7f8e")
-	var steel_hi := Color("9fb1bd")
+	var wrecked := dying
+	var steel := Color("55626d") if wrecked else Color("6d7f8e")
+	var steel_hi := Color("7d8b95") if wrecked else Color("9fb1bd")
 	var lamp := Color("ffc94a")
 	var lamp_hot := Color("fff6d8")
 	var airborne := not is_on_floor()
-	var rolling := is_on_floor() and absf(velocity.x) > 8
+	var rolling := not wrecked and is_on_floor() and absf(velocity.x) > 8
 	var stride := sin(float(tick) * 0.7) * 2.0 if rolling else 0.0
 	var eye := Vector2(facing * 1.8, -19.5)
+	# Death is drawn by killing the lamp, because the lamp is the whole identity: the cone
+	# goes out, the eye drops to a dim red that flickers on a three-tick beat, and the
+	# antenna folds over. Not one of these moves the silhouette, so the art still matches
+	# the collider on the frame Beacon dies.
+	var flicker := wrecked and (dying_tick / 3) % 2 == 0
+	var eye_colour := Color("ffe08a") if airborne else lamp
+	if wrecked:
+		eye_colour = Color("8d3a34") if flicker else Color("3b2f33")
 
 	# The tracks tuck up on a jump, so the hull has to be drawn down to meet them or
 	# the body reads as floating above a detached base.
 	var base_top := -4.0 if airborne else -6.0
 
 	# Light cone. Widens and reaches further while airborne; purely decorative.
-	var reach := 22.0 if airborne else 16.0
-	var spread := 8.0 if airborne else 5.5
-	draw_colored_polygon(PackedVector2Array([eye,
-		Vector2(eye.x + facing * reach, eye.y - spread),
-		Vector2(eye.x + facing * reach, eye.y + spread)]), Color(1.0, 0.79, 0.29, 0.13))
+	if not wrecked:
+		var reach := 22.0 if airborne else 16.0
+		var spread := 8.0 if airborne else 5.5
+		draw_colored_polygon(PackedVector2Array([eye,
+			Vector2(eye.x + facing * reach, eye.y - spread),
+			Vector2(eye.x + facing * reach, eye.y + spread)]), Color(1.0, 0.79, 0.29, 0.13))
 
-	# Antenna: trails behind the facing direction, straightens up on a jump.
-	var tip := Vector2((-facing * 0.9 if airborne else -facing * 3.0) + stride * 0.5, -26.5)
-	draw_line(Vector2(0, -23.0), tip, ink, 2.0)
-	draw_circle(tip, 1.5, lamp_hot if airborne else steel_hi)
+	# Antenna: trails behind the facing direction, straightens up on a jump. Skipped while
+	# wrecked, where a snapped version is drawn after the housing instead -- folding it here
+	# just hid it behind the housing, which is drawn later.
+	if not wrecked:
+		var tip := Vector2((-facing * 0.9 if airborne else -facing * 3.0) + stride * 0.5, -26.5)
+		draw_line(Vector2(0, -23.0), tip, ink, 2.0)
+		draw_circle(tip, 1.5, lamp_hot if airborne else steel_hi)
 
 	# Lamp housing, tapered outward toward the base like a lighthouse gallery.
 	draw_colored_polygon(PackedVector2Array([Vector2(-6,-24), Vector2(6,-24), Vector2(7,-15), Vector2(-7,-15)]), ink)
@@ -104,15 +123,24 @@ func _draw() -> void:
 
 	# The single eye. Its offset and pupil are the primary left/right facing cue.
 	draw_circle(eye, 4.2, ink)
-	draw_circle(eye, 3.4, Color("ffe08a") if airborne else lamp)
+	draw_circle(eye, 3.4, eye_colour)
 	draw_circle(Vector2(eye.x + facing * 1.0, eye.y), 1.5, ink)
-	draw_circle(Vector2(eye.x - facing * 1.4, eye.y - 1.4), 0.9, lamp_hot)
+	if not wrecked:
+		draw_circle(Vector2(eye.x - facing * 1.4, eye.y - 1.4), 0.9, lamp_hot)
+	else:
+		# Snapped mast, hinged backwards over the housing. Drawn last so it reads as broken
+		# rather than disappearing behind the gallery, and its tip stays inside x[-9,9].
+		var hinge := Vector2(-facing * 3.5, -20.0)
+		var snapped := Vector2(-facing * 7.4, -16.6)
+		draw_line(Vector2(0, -23.0), hinge, ink, 2.0)
+		draw_line(hinge, snapped, ink, 2.0)
+		draw_circle(snapped, 1.4, steel_hi)
 
 	# Collar and tapered hull. The hull bottom follows base_top so the two always meet.
 	draw_rect(Rect2(-8, -15, 16, 2), ink)
 	draw_colored_polygon(PackedVector2Array([Vector2(-6,-14), Vector2(6,-14), Vector2(8.5,base_top), Vector2(-8.5,base_top)]), ink)
 	draw_colored_polygon(PackedVector2Array([Vector2(-5,-13), Vector2(5,-13), Vector2(7.2,base_top-1), Vector2(-7.2,base_top-1)]), steel)
-	draw_rect(Rect2(-2, -12, 4, 2), lamp)
+	draw_rect(Rect2(-2, -12, 4, 2), Color("5a4340") if wrecked else lamp)
 
 	# Tracked base. The top edge tucks up on a jump, but the bottom edge stays on y=0
 	# so the drawn silhouette always ends exactly where the collider ends.

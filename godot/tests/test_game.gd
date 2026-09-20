@@ -125,6 +125,41 @@ func run() -> void:
 	game.player.position = Vector2(415,432)
 	await steps(1)
 	check("fall-boundary", game.state == Game.State.DYING, {"state":game.state})
+	# Added for declared change 5.4. The death feedback must be drawing state and nothing
+	# else: the player stays exactly where it died, stays disabled, and the flash is aimed
+	# at the hazard that actually killed it.
+	await fresh()
+	game.player.position = Vector2(330,310)
+	await steps(4)
+	var flagged: bool = game.player.dying and game.death_flash == 0
+	var frozen: Vector2 = game.player.position
+	await steps(10)
+	check("death-visual-is-drawing-only", flagged and game.player.dying_tick >= 9 and game.player.position == frozen and not game.player.enabled, {"dying":game.player.dying,"dying_tick":game.player.dying_tick,"flash":game.death_flash,"moved":game.player.position != frozen})
+	await steps(40)
+	check("death-visual-cleared-on-respawn", game.state == Game.State.PLAYING and not game.player.dying and game.player.dying_tick == 0 and game.death_flash == -1, {"state":game.state,"dying":game.player.dying,"dying_tick":game.player.dying_tick,"flash":game.death_flash})
+	# Added for declared change 5.3. The camera lead has to follow facing, and no amount of
+	# running may frame space outside the level.
+	await fresh()
+	game.player.position = Vector2(800,320)
+	game.player.test_axis = 1
+	await steps(40)
+	var lead_right: float = game.camera.position.x - game.player.position.x
+	game.player.test_axis = -1
+	await steps(30)
+	var lead_left: float = game.camera.position.x - game.player.position.x
+	check("camera-lead-follows-facing", lead_right > 40.0 and lead_left < -40.0, {"lead_right":lead_right,"lead_left":lead_left})
+	await fresh()
+	var seen_low: float = 1e9
+	var seen_high: float = -1e9
+	var framing = Route.new()
+	var framing_ticks := 0
+	while game.state == Game.State.PLAYING and framing_ticks < 900:
+		framing.step(game.player)
+		await steps(1)
+		seen_low = minf(seen_low, game.camera.position.x)
+		seen_high = maxf(seen_high, game.camera.position.x)
+		framing_ticks += 1
+	check("camera-stays-inside-level", seen_low >= 319.99 and seen_high <= float(game.level.width) - 319.99, {"min":seen_low,"max":seen_high,"limit":float(game.level.width)-320.0})
 	await fresh()
 	var route = Route.new()
 	var route_ticks := 0
