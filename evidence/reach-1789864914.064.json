@@ -1,0 +1,109 @@
+{
+  "created_at": "2026-09-20T00:41:54",
+  "engine": "4.7.2-stable (official)",
+  "failures": 0,
+  "results": [
+    {
+      "contiguous": true,
+      "fatal_samples": 7,
+      "jump": "starter gap 1: ground -> second slab",
+      "landed": 27,
+      "reached_goal": 0,
+      "samples_2px": 34,
+      "status": "PASS",
+      "target": "[P: (512.0, 320.0), S: (224.0, 64.0)]",
+      "window": "x 394..446 (54 px)"
+    },
+    {
+      "contiguous": true,
+      "fatal_samples": 3,
+      "jump": "starter gap 2: second slab -> third slab",
+      "landed": 35,
+      "reached_goal": 0,
+      "samples_2px": 38,
+      "status": "PASS",
+      "target": "[P: (784.0, 320.0), S: (176.0, 64.0)]",
+      "window": "x 666..734 (70 px)"
+    },
+    {
+      "contiguous": true,
+      "fatal_samples": 15,
+      "jump": "tower 0: third slab -> approach",
+      "landed": 34,
+      "reached_goal": 0,
+      "samples_2px": 54,
+      "status": "PASS",
+      "target": "[P: (1008.0, 320.0), S: (168.0, 64.0)]",
+      "window": "x 890..956 (68 px)"
+    },
+    {
+      "contiguous": true,
+      "fatal_samples": 0,
+      "jump": "tower 1: approach -> pedestal",
+      "landed": 43,
+      "reached_goal": 0,
+      "samples_2px": 43,
+      "status": "PASS",
+      "target": "[P: (1104.0, 296.0), S: (72.0, 24.0)]",
+      "window": "x 1010..1094 (86 px)"
+    },
+    {
+      "contiguous": true,
+      "fatal_samples": 10,
+      "jump": "tower 2: pedestal -> step one",
+      "landed": 34,
+      "reached_goal": 0,
+      "samples_2px": 45,
+      "status": "PASS",
+      "target": "[P: (1192.0, 280.0), S: (64.0, 16.0)]",
+      "window": "x 1096..1162 (68 px)"
+    },
+    {
+      "contiguous": true,
+      "fatal_samples": 13,
+      "jump": "tower 3: step one -> step two",
+      "landed": 27,
+      "reached_goal": 0,
+      "samples_2px": 40,
+      "status": "PASS",
+      "target": "[P: (1304.0, 240.0), S: (64.0, 16.0)]",
+      "window": "x 1212..1264 (54 px)"
+    },
+    {
+      "contiguous": true,
+      "fatal_samples": 13,
+      "jump": "tower 4: step two -> summit",
+      "landed": 27,
+      "reached_goal": 0,
+      "samples_2px": 40,
+      "status": "PASS",
+      "target": "[P: (1416.0, 200.0), S: (248.0, 16.0)]",
+      "window": "x 1324..1376 (54 px)"
+    },
+    {
+      "contiguous": true,
+      "fatal_samples": 6,
+      "jump": "tower 5: summit -> over the beacon gate",
+      "landed": 30,
+      "reached_goal": 1,
+      "samples_2px": 36,
+      "status": "PASS",
+      "target": "[P: (1504.0, 200.0), S: (160.0, 16.0)]",
+      "window": "x 1408..1466 (60 px)"
+    },
+    {
+      "jump": "chasm is not walkable",
+      "reached_far_side_on_foot": 0,
+      "samples_4px": 40,
+      "status": "PASS"
+    }
+  ],
+  "scope": "Take-off window measurement with shipped tuning; not a human playtest",
+  "tuning": {
+    "buffer_ticks": 6,
+    "coyote_ticks": 6,
+    "gravity": 960,
+    "jump_velocity": -320,
+    "speed": 160
+  }
+}

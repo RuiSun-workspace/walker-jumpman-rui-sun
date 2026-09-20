@@ -349,3 +349,42 @@ Recorded because a green report that was green for the wrong reason is worth as 
    crossing. Target moved to x = 1200.
 
 Both were fixed in the test, not in the level. Level geometry did not change as a result of either.
+
+### R5 — 2026-09-19 — Two changes from the human playtest.
+
+Rui played the built extension at the keyboard and reported two things. Neither was a crash,
+and neither showed up in any automated check.
+
+**5.1 — "The last spikes are a bit close to the finish."** Correct, and measurable: the beacon
+gate ended at x = 1504 and the finish started at x = 1520, so clearing the gate put Beacon on
+the flag in the same arc. `verify_reach.gd` had quietly recorded this — 30 of 30 successful
+take-offs over the gate reported `reached_goal`, meaning every single one ended the run in
+mid-air. There was no landing beat at the top of the tower at all.
+
+Level width 1600 → 1664, summit `[1416, 200, 184, 16]` → `[1416, 200, 248, 16]`, finish
+`[1520, 144, 24, 56]` → `[1584, 144, 24, 56]`. The gate-to-flag gap is now 80 px. After the
+change `reached_goal` drops from 30 to **1 of 30**: the other 29 take-offs land on the summit
+and walk the last stretch to the flag. The take-off window itself is unchanged at 60 px, so
+the jump is no harder — it just resolves on the ground now.
+
+**5.2 — "Whichever way I move, the legs animate as if moving right."** Also correct, and the
+cause was a frequency problem rather than a sign error. The tread marks were driven by
+`fposmod(position.x * 0.6, 5.0)`, which does reverse with travel, but a 5 px pattern at
+160 px/s cycles at **32 Hz** — far too fast to resolve, so it reads as static texture in both
+directions. Standing still, it showed nothing at all.
+
+Two fixes: the scroll is geared down to roughly 7 Hz, matching the starter's own leg cadence
+(`sin(tick * 0.7)`, about 6.7 Hz), and the **leading drive sprocket is now drawn larger than
+the trailing idler and carries the hub pin**, so direction reads even when Beacon is standing
+between jumps. This is a static cue rather than an animated one, which is what the original
+report was actually missing.
+
+**5.3 — a defect found while checking 5.2.** Zooming into the re-rendered frames showed a
+detached vertical line to the left of the hull. Four tread marks were being stepped through a
+20 px cycle while the hull only exposes a 15 px window, so the wrapped mark was drawn outside
+Beacon. Wrapped marks are now skipped. This had been present since the character commit
+`522e6d1` and no automated check would ever have caught it.
+
+Full suite after all three: `test_game.gd` 25/0, `test_keyboard.gd` 9/0, `verify_reach.gd` 9/0.
+The route now completes in 576 ticks and ends standing at `(1582.213, 199.9253)` — on the
+summit, at the flag — rather than in mid-air.

@@ -118,11 +118,24 @@ func _draw() -> void:
 	# so the drawn silhouette always ends exactly where the collider ends.
 	draw_rect(Rect2(-9, base_top, 18, -base_top), ink)
 	draw_rect(Rect2(-8, base_top + 1, 16, -base_top - 2), steel)
-	var roll: float = fposmod(position.x * 0.6, 5.0) if rolling else 0.0
+	# Tread marks scroll against the direction of travel, so reversing visibly reverses the
+	# tracks. Driven by position.x rather than tick, and geared down to roughly 7 Hz at full
+	# speed to match the starter's leg cadence: pinning them to world x for true rolling
+	# without slipping cycles a 5 px pattern at 32 Hz, which just strobes.
+	var roll: float = 0.0 if airborne else fposmod(-position.x * 0.22, 5.0)
+	# Four marks are stepped through a 20 px cycle but only the 15 px window [-7.5, 7.5]
+	# is inside the hull, so the one that has wrapped is skipped rather than drawn beside
+	# Beacon as a detached line.
 	for i in range(4):
-		var tx: float = -7.5 + float(i) * 5.0 + roll
-		if tx > 7.5:
-			tx -= 20.0
+		var tx: float = -12.5 + float(i) * 5.0 + roll
+		if tx < -7.5 or tx > 7.5:
+			continue
 		draw_line(Vector2(tx, base_top + 1.5), Vector2(tx, -1.5), ink, 1.0)
-	draw_circle(Vector2(-5.0, base_top / 2.0), 1.6, steel_hi)
-	draw_circle(Vector2(5.0, base_top / 2.0), 1.6, steel_hi)
+	# The leading drive sprocket is the larger of the two hubs and carries the hub pin, so
+	# the tracks still read left or right while Beacon is standing still between jumps.
+	var hub_y := base_top / 2.0
+	var drive := 2.4 if not airborne else 1.7
+	var idler := 1.5 if not airborne else 1.1
+	draw_circle(Vector2(-5.0, hub_y), drive if facing < 0 else idler, steel_hi)
+	draw_circle(Vector2(5.0, hub_y), drive if facing > 0 else idler, steel_hi)
+	draw_circle(Vector2(facing * 5.0, hub_y), 0.8, ink)

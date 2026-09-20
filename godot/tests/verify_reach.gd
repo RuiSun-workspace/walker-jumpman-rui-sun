@@ -104,8 +104,8 @@ func run() -> void:
 	await sweep("tower 1: approach -> pedestal", 320.0, 1010.0, 1094.0, Rect2(1104, 296, 72, 24))
 	await sweep("tower 2: pedestal -> step one", 296.0, 1096.0, 1184.0, Rect2(1192, 280, 64, 16))
 	await sweep("tower 3: step one -> step two", 280.0, 1186.0, 1264.0, Rect2(1304, 240, 64, 16))
-	await sweep("tower 4: step two -> summit", 240.0, 1298.0, 1376.0, Rect2(1416, 200, 184, 16))
-	await sweep("tower 5: summit -> over the beacon gate", 200.0, 1400.0, 1470.0, Rect2(1504, 200, 96, 16))
+	await sweep("tower 4: step two -> summit", 240.0, 1298.0, 1376.0, Rect2(1416, 200, 248, 16))
+	await sweep("tower 5: summit -> over the beacon gate", 200.0, 1400.0, 1470.0, Rect2(1504, 200, 160, 16))
 
 	# The chasm must NOT be crossable at ground level: no take-off from the approach may
 	# end alive on flat ground past the lip at x=1176. If one does, the tower is optional
