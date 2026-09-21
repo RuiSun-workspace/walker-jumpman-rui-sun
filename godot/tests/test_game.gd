@@ -139,15 +139,40 @@ func run() -> void:
 	check("death-visual-cleared-on-respawn", game.state == Game.State.PLAYING and not game.player.dying and game.player.dying_tick == 0 and game.death_flash == -1, {"state":game.state,"dying":game.player.dying,"dying_tick":game.player.dying_tick,"flash":game.death_flash})
 	# Added for declared change 5.3. The camera lead has to follow facing, and no amount of
 	# running may frame space outside the level.
+	# Steady-state lead, measured with the player parked so the reading is the lead itself
+	# and not the lead minus the camera's lag behind a moving target. Disabling the player
+	# makes _physics_process return on its first line, so the forced velocity stays put
+	# while session._update_camera keeps running. Threshold raised from the transient
+	# version's 40 to 60 now that the true settled value is readable.
 	await fresh()
 	game.player.position = Vector2(800,320)
-	game.player.test_axis = 1
-	await steps(40)
+	game.player.enabled = false
+	game.player.velocity = Vector2(160, 0)
+	await steps(120)
 	var lead_right: float = game.camera.position.x - game.player.position.x
-	game.player.test_axis = -1
-	await steps(30)
+	game.player.velocity = Vector2(-160, 0)
+	await steps(120)
 	var lead_left: float = game.camera.position.x - game.player.position.x
-	check("camera-lead-follows-facing", lead_right > 40.0 and lead_left < -40.0, {"lead_right":lead_right,"lead_left":lead_left})
+	game.player.enabled = true
+	check("camera-lead-follows-travel", lead_right > 60.0 and lead_left < -60.0, {"lead_right":lead_right,"lead_left":lead_left})
+	# Added after a human playtest reported the camera shaking under repeated reversals.
+	# Measured relative to the player so the player's own movement is not counted. Rapid
+	# tapping should leave the camera roughly where it is, not swing it across the screen.
+	# 60 ticks, not 5: fresh() parks the camera at 320 and the player is teleported to 800,
+	# so the camera needs a full second to finish catching up. Measuring too early records
+	# that catch-up as if it were shake.
+	await fresh()
+	game.player.position = Vector2(800,320)
+	await steps(60)
+	var swing_lo: float = 1e9
+	var swing_hi: float = -1e9
+	for i in range(60):
+		game.player.test_axis = 1.0 if (i / 3) % 2 == 0 else -1.0
+		await steps(1)
+		var rel: float = game.camera.position.x - game.player.position.x
+		swing_lo = minf(swing_lo, rel)
+		swing_hi = maxf(swing_hi, rel)
+	check("camera-steady-under-rapid-reversal", (swing_hi - swing_lo) < 40.0, {"swing":swing_hi - swing_lo})
 	await fresh()
 	var seen_low: float = 1e9
 	var seen_high: float = -1e9

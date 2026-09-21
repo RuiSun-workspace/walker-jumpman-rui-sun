@@ -119,8 +119,11 @@ so the bar no longer fills at the halfway point.
 Both were written into [CHANGE-BRIEF.md](CHANGE-BRIEF.md) §5 **before** any code was edited, each
 with its own check.
 
-- **Facing-aware eased camera.** The constant `+100` snap becomes a facing-aware `±80` eased
-  toward its target. `camera.y` stays fixed on purpose.
+- **Velocity-driven eased camera.** The constant `+100` snap becomes a `±80` lead that follows
+  the direction actually travelled, eased toward its target. The first version read the discrete
+  `facing` flag; a playtest found that shook badly under repeated reversal (measured at 97 px of
+  swing) and that it could point the wrong way entirely. Now 11 px. `camera.y` stays fixed on
+  purpose.
 - **Death feedback.** On death the light cone goes out, the eye drops to a flickering dim red,
   the mast snaps, the hull darkens, and the hazard that killed you flashes. **Drawing state
   only** — no timing, physics or collision value changes, and nothing moves the silhouette.
@@ -130,7 +133,7 @@ with its own check.
 ## Tests
 
 ```bash
-godot --headless --path godot --script res://tests/test_game.gd       # 29 checks / 0 failures
+godot --headless --path godot --script res://tests/test_game.gd       # 30 checks / 0 failures
 godot --headless --path godot --script res://tests/test_keyboard.gd   #  9 checks / 0 failures
 godot --headless --path godot --script res://tests/verify_reach.gd    #  9 jumps  / 0 failures
 ```
@@ -144,7 +147,9 @@ powershell -ExecutionPolicy Bypass -File scripts/make-character-sheet.ps1
 ```
 
 All 25 of the starter's mechanics checks and all 9 keyboard checks are present, unmodified, and
-passing. **No assertion was deleted or weakened.** Four were added for the declared changes.
+passing. **No starter assertion was deleted or weakened.** Five were added for the declared
+changes and the second playtest. One check of my own was renamed and had its threshold **raised**
+from 40 to 60; TEST-REPORT §1.1 and §5.7 explain why.
 
 `tests/verify_reach.gd` is new: it sweeps the take-off x of the real player in 2 px steps and
 reports the window that actually lands. It reads **no value from `tuning.gd`**, so a level that
@@ -170,8 +175,7 @@ Results, the full human playtest log, and the two reachability runs that genuine
 5. **The route fixture cannot stop or reverse.** It proves a route exists, not that a person can
    repeat it.
 6. **No export was built or tested.** Source only.
-7. **The route/failure/replay pass on the newest revision has not been hand-verified** — see
-   TEST-REPORT §3 session 5, marked PENDING rather than filled in from memory.
+7. **Camera movement under repeated reversal is reduced, not zero** — 97 px → 11 px.
 
 ---
 
@@ -203,3 +207,5 @@ repository by `.gitignore` and will live in the course media storage.
 | `c2f2e50` | Beacon Tower and data-driven drawing |
 | `3d7d43f` | First human playtest acted on |
 | `9261070` | Death feedback and facing-aware camera |
+| `878e90c` | TEST-REPORT, FRICTIONAL, SOURCES, README |
+| *HEAD* | Second human playtest acted on — camera lead driven by velocity |

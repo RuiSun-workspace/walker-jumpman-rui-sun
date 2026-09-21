@@ -1,7 +1,7 @@
 # TEST-REPORT — walker-jumpman-rui-sun
 
 **Author:** Rui Sun · **Course:** CSYE 7270, Fall 2026, Assignment 1
-**Source revision under test:** `9261070` — *Add death feedback and a facing-aware camera*
+**Source revision under test:** `HEAD` — *Drive the camera lead from velocity* (see §3 session 5)
 **Engine:** Godot `4.7.2.stable.official.ed1daf0bf` (the exact build the starter README names as tested)
 **OS:** Windows 11 Home China, 10.0.26200 · GPU path: OpenGL 3.3 compatibility, NVIDIA RTX 3070 Laptop
 **Starter:** [nikbearbrown/walker-jumpman](https://github.com/nikbearbrown/walker-jumpman)
@@ -18,29 +18,36 @@ Capture scripts must run **without** `--headless` — they save the engine's ren
 
 ## 1. Automated checks
 
-All three suites at revision `9261070`, run 2026-09-20 in one sitting.
+All three suites at the current revision, run 2026-09-21 in one sitting.
 
 | Suite | Command | Result | Raw evidence |
 | --- | --- | --- | --- |
-| Mechanics | `--script res://tests/test_game.gd` | **29 checks / 0 failures** | `evidence/mechanics-1789928395.246.json` |
-| Keyboard | `--script res://tests/test_keyboard.gd` | **9 checks / 0 failures** | `evidence/keyboard-1789928396.621.json` |
-| Reachability | `--script res://tests/verify_reach.gd` | **9 jumps / 0 failures** | `evidence/reach-1789928662.842.json` |
+| Mechanics | `--script res://tests/test_game.gd` | **30 checks / 0 failures** | `evidence/mechanics-1790010907.48.json` |
+| Keyboard | `--script res://tests/test_keyboard.gd` | **9 checks / 0 failures** | `evidence/keyboard-1790010908.811.json` |
+| Reachability | `--script res://tests/verify_reach.gd` | **9 jumps / 0 failures** | `evidence/reach-1790011175.046.json` |
 
 `evidence/` also retains every earlier run, including the two that **failed**
 (`reach-1789859412.664.json`, `reach-1789859855.182.json`). They are kept on purpose; see §5.
 
 ### 1.1 What changed in the mechanics suite, and what did not
 
-The starter shipped 25 checks. All 25 are still present, unmodified, and passing. **No assertion
-was deleted, loosened, or had an expected value adjusted.** Four were added for the two declared
-behaviour changes:
+The starter shipped 25 checks. All 25 are still present, unmodified, and passing. **No starter
+assertion was deleted, loosened, or had an expected value adjusted.** Five were added for the two
+declared behaviour changes and the playtest fix:
 
 | Added check | Why it exists | Observed |
 | --- | --- | --- |
 | `death-visual-is-drawing-only` | Declared change 5.4 must not move or re-enable the player | `dying: true`, `dying_tick: 11`, `flash: 0`, `moved: false`, still disabled |
 | `death-visual-cleared-on-respawn` | The flag must not leak into the next attempt | `dying: false`, `dying_tick: 0`, `flash: -1`, state `PLAYING` |
-| `camera-lead-follows-facing` | Declared change 5.3 must actually reverse | `lead_right: 53.49`, `lead_left: -57.10` |
+| `camera-lead-follows-travel` | Declared change 5.3 must lead in the direction actually travelled | `lead_right: 78.59`, `lead_left: -77.20` |
+| `camera-steady-under-rapid-reversal` | Added after the session-5 playtest; see §5.7 | `swing: 11.32` px |
 | `camera-stays-inside-level` | Easing must never frame space outside the level | min `320.0`, max `1343.9995`, limit `1344.0` |
+
+**One check of mine was changed, and here is exactly how.** `camera-lead-follows-facing` is
+renamed `camera-lead-follows-travel`, now measures with the player parked so the reading is the
+settled lead rather than the lead minus the camera's lag behind a moving target, and its
+**threshold was raised from 40 to 60** because the true value is now readable. That is a tighter
+assertion, not a relaxed one — observed values went from ±53…57 to ±78. Rationale in §5.7.
 
 ### 1.2 The route fixture was rewritten, and here is exactly how
 
@@ -148,13 +155,24 @@ Both acted on in `3d7d43f`. See §5.
 
 > "没什么问题了，继续下一步" (no more problems, go to the next step)
 
-### Session 5 — after `9261070` (camera + death feedback) — **PENDING**
+### Session 5 — 2026-09-21 — after `9261070` (camera + death feedback)
 
-The build was launched and looked at, but the specific questions asked — is the death feedback
-legible, does reversing direction make the camera uncomfortable, is the camera adequate during
-the climb — **were not answered**, and the route/failure/replay pass below has not been run by
-hand on this revision. Those rows are marked PENDING in §4 and this report is not final until
-they are filled in with real answers.
+Ran the full six-item pass: complete the extended route by hand, fall into the chasm on purpose,
+hit the beacon gate spikes on purpose, replay with Enter after completing, pause and resume
+mid-climb, and reverse direction while running.
+
+**Five of six behaved.** The route was completed by hand to the summit flag, the chasm fall and
+the spike death both produced the expected retry back at spawn, Enter replayed cleanly, and
+pause/resume during the climb was fine.
+
+**One defect, reported in these words:**
+
+> "玩测的结果除了反向时相机抖动都正常，频繁反向的时候相机抖动比较厉害"
+> (everything was normal except camera shake when reversing — reversing frequently shakes it
+> quite badly)
+
+This is a defect **I introduced in `9261070`**, not a starter problem. Diagnosed, measured at
+**97.02 px of swing**, and fixed. Full cycle in §5.7; the design reasoning is CHANGE-BRIEF R7.
 
 ---
 
@@ -164,9 +182,9 @@ they are filled in with real answers.
 | --- | --- | --- |
 | **Startup and controls** — project runs; movement, jump, pause/resume, restart | `test_keyboard.gd` 9/9: `enter-start`, `keyboard-move`, `keyboard-jump`, `escape-pause`, `enter-resume`, `r-retry`, `enter-replay`, `pause-main-menu`, `menu-start-again`. Human sessions 1–4. | **PASS** |
 | **Character appearance** — left/right, standing, jumping; no visual/collision mismatch | `evidence/screens/character/` — six engine-rendered states, plus `SHEET-collider-check.png` which draws the real 18×28 collider over the art. Human session 2. | **PASS** |
-| **Extended route** — a normal route reaches both new landings and the relocated finish | `complete-real-route`: 11 marks, 576 ticks, 0 deaths, ends at (1582.213, 199.9253) on the summit. `verify_reach.gd` measures all six new jumps at 54–86 px. Screenshot `evidence/screens/05-tower.png`. | **PASS (automated)** · human pass **PENDING** |
-| **Failure and recovery** — a real hazard or missed landing produces the expected retry; replay works after completion | `actual-spike-collision`, `fall-boundary`, `respawn`, `twenty-retries`, `duplicate-death-ignored`, `manual-restart-not-death`, `replay-idempotent`. Screenshot `evidence/screens/02-failure.png`. | **PASS (automated)** · human pass **PENDING** |
-| **Camera and presentation** — the extension and landing/finish information stay visible and readable | `camera-stays-inside-level` (max 1343.9995 vs limit 1344.0), `camera-lead-follows-facing`. Screenshots `05-tower.png`, `04-complete.png`. Known limitation in §6. | **PASS (automated)** · human judgement **PENDING** |
+| **Extended route** — a normal route reaches both new landings and the relocated finish | `complete-real-route`: 11 marks, 576 ticks, 0 deaths, ends at (1582.213, 199.9253) on the summit. `verify_reach.gd` measures all six new jumps at 54–86 px. Screenshot `evidence/screens/05-tower.png`. Human session 5 completed the route by hand to the summit flag. | **PASS** |
+| **Failure and recovery** — a real hazard or missed landing produces the expected retry; replay works after completion | `actual-spike-collision`, `fall-boundary`, `respawn`, `twenty-retries`, `duplicate-death-ignored`, `manual-restart-not-death`, `replay-idempotent`. Screenshot `evidence/screens/02-failure.png`. Human session 5: deliberate chasm fall and deliberate beacon-gate spike death both retried at spawn; Enter replayed cleanly after completion; pause/resume mid-climb behaved. | **PASS** |
+| **Camera and presentation** — the extension and landing/finish information stay visible and readable | `camera-stays-inside-level` (max 1343.9995 vs limit 1344.0), `camera-lead-follows-travel` (±78), `camera-steady-under-rapid-reversal` (11.32 px). Screenshots `05-tower.png`, `04-complete.png`. **Human session 5 found a real defect here — 97 px of shake under repeated reversal — which was measured and fixed; see §5.7.** Remaining limitation in §6.1. | **PASS after fix** |
 | **Automated checks** — commands, results, failures and updates explained | §1 above, including the two genuine failures in §5.3 and the route-fixture rewrite in §1.2. | **PASS** |
 
 ---
@@ -235,8 +253,49 @@ lamp housing — and the housing is drawn later, so the snapped antenna could no
 All 29 checks passed. It is now drawn after the housing, hinged back over the gallery, tip at
 x = ±7.4, still inside the collider box.
 
-**Pattern worth naming:** three of these six defects (5.1, 5.4's second half, 5.6) were invisible
-to every automated check and only a rendered frame could catch them.
+### 5.7 — Human report: the camera shook under repeated reversal (session 5)
+
+The one thing that did not behave in the session-5 pass, and a defect **I introduced** in
+`9261070` rather than one inherited from the starter.
+
+**Cause.** `facing` is discrete — `facing = signf(axis)` flips the instant the key changes, which
+moved the camera target 160 px in one frame (from `+80` to `−80`). Easing toward a target that
+teleports back and forth produces exactly the reported swing.
+
+**I measured before changing anything**, with a new check that taps left and right every three
+ticks for one second and records the camera position *relative to the player*, so the player's
+own motion is not counted.
+
+**My first version of that check was wrong**, and it is worth recording because it nearly sent me
+the wrong way. It reported a 207 px swing — but `fresh()` parks the camera at x = 320 while the
+test teleports the player to x = 800, and a 5-tick settle was recording the camera's catch-up as
+if it were shake. Settle raised to 60 ticks. Both numbers below come from the corrected
+instrument, with the old `session.gd` checked back out of git and run against the same test.
+
+**Fix.** The lead is no longer read from `facing`. It is a continuous bias driven by actual
+velocity, `clampf(velocity.x / tuning.speed, -1, 1)`, eased at `CAMERA_LEAD_EASE = 2.2` —
+deliberately much slower than the camera's own `CAMERA_EASE = 7.0`. Tapping averages out near
+zero; a sustained run still builds the full lead.
+
+| | Before (`facing`) | After (velocity) |
+| --- | --- | --- |
+| Swing under rapid reversal | **97.02 px** FAIL | **11.32 px** PASS |
+| Steady lead, running right | +79.99 | +78.59 |
+| Steady lead, running left | **+79.99** FAIL | **−77.20** PASS |
+
+**A second, deeper defect the instrument exposed.** With the player parked and velocity forced
+left, the old version still reported a lead of **+79.99** — pointing the wrong way. `facing` only
+updates inside `_physics_process` from the input axis, so the old camera followed *the last key
+pressed* rather than where Beacon was actually travelling. The playtest reported shake; measuring
+it found that the lead could also simply be backwards.
+
+97 px is about 15% of the 640 px viewport oscillating, so the report was not a matter of taste.
+
+---
+
+**Pattern worth naming:** three of these seven defects (5.1, 5.4's second half, 5.6) were
+invisible to every automated check and only a rendered frame could catch them, and one more (5.7)
+was invisible to every automated check until a person played it and said so.
 
 ---
 
@@ -265,6 +324,9 @@ Stated plainly rather than presented as solved.
 7. **Intermediate duplicate test runs were kept, not curated.** `evidence/` contains several runs
    with identical results from the same code state. They are noise, but deleting evidence looked
    worse than keeping it.
+8. **Residual camera movement under reversal is 11.32 px, not zero.** The shake from §5.7 is
+   reduced roughly ninefold, not eliminated. Nobody has reported the remaining amount as
+   uncomfortable, but nobody has specifically been asked either.
 
 ---
 

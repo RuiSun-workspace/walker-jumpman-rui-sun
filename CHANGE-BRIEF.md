@@ -439,3 +439,47 @@ the camera at `width - 320 = 1344`, which the facing-aware lead reaches at playe
 the last ~320 px of the climb still has a static camera. That is correct behaviour — the
 alternative is framing space outside the level — but it is a real limitation and belongs in
 TEST-REPORT.md rather than being described as fixed.
+
+### R7 — 2026-09-21 — The facing-aware camera from R6 shook. Playtest found it; it is now driven by velocity.
+
+Rui played `9261070` and reported that everything behaved **except** the camera: reversing
+repeatedly made it shake badly. This is a defect R6 introduced, not a starter problem.
+
+**Cause.** `facing` is discrete. `facing = signf(axis)` flips the instant the key changes, which
+moved the camera target 160 px in a single frame (from `+80` to `-80`). Easing toward a target
+that teleports back and forth produces exactly the swing that was reported.
+
+**Measurement before fixing.** A new check taps left and right every three ticks for one second
+and records the camera position *relative to the player*, so the player's own motion is not
+counted. Against `9261070` it measured a **97.02 px swing** — about 15% of the 640 px viewport
+oscillating.
+
+*My first version of that check was wrong and reported 207 px.* `fresh()` parks the camera at
+x = 320 and the test teleports the player to x = 800, so a 5-tick settle time was recording the
+camera's catch-up as if it were shake. Settle raised to 60 ticks. Both the before and after
+numbers below come from the corrected instrument, measured by checking the old `session.gd` back
+out and running the same test against it.
+
+**Fix.** The lead is no longer read from `facing`. It is a continuous bias driven by actual
+velocity — `clampf(velocity.x / tuning.speed, -1, 1)` — and eased at `CAMERA_LEAD_EASE = 2.2`,
+deliberately much slower than the camera's own `CAMERA_EASE = 7.0`. Tapping therefore averages
+out near zero; a sustained run still builds the full lead.
+
+| | Before (`facing`) | After (velocity) |
+| --- | --- | --- |
+| Swing under rapid reversal | **97.02 px** FAIL | **11.32 px** PASS |
+| Steady-state lead, running right | +79.99 | +78.59 |
+| Steady-state lead, running left | **+79.99** FAIL | **−77.20** PASS |
+
+**A second, deeper defect the measurement exposed.** With the player parked and velocity forced
+left, the old version still reported a lead of **+79.99** — positive, i.e. pointing the wrong
+way. `facing` only updates inside `_physics_process` from the input axis, so the old camera was
+following *the last key pressed*, not where Beacon was actually travelling. The playtest reported
+shake; the instrument found that the lead could also simply be backwards.
+
+**Check changes, disclosed.** `camera-lead-follows-facing` is renamed `camera-lead-follows-travel`
+and now measures with the player parked, so the reading is the settled lead rather than the lead
+minus the camera's lag behind a moving target. Because the true value is now readable, the
+**threshold was raised from 40 to 60** — a tighter assertion, not a relaxed one. Observed values
+went from ±53…57 to ±78. `camera-steady-under-rapid-reversal` is new. `test_game.gd` is now 30
+checks. Nothing was removed.

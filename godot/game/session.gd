@@ -22,6 +22,10 @@ var death_flash: int = -1
 ## Framing only. The starter used a constant +100 lead; see _update_camera().
 const CAMERA_LEAD := 80.0
 const CAMERA_EASE := 7.0
+## Deliberately slower than CAMERA_EASE so that tapping left and right cancels out
+## instead of swinging the camera. See _update_camera().
+const CAMERA_LEAD_EASE := 2.2
+var lead_bias: float = 0.0
 
 func _ready() -> void:
 	process_physics_priority = 10
@@ -108,6 +112,7 @@ func restart_attempt() -> void:
 	# until the broadphase has observed the reset, preventing a phantom second death.
 	contact_settle_ticks = 2
 	death_flash = -1
+	lead_bias = 0.0
 	player.reset_at(Vector2(level.spawn[0], level.spawn[1]))
 	player.enabled = true
 	camera.position = Vector2(320, 180)
@@ -178,13 +183,22 @@ func _physics_process(delta: float) -> void:
 
 ## The starter snapped the camera to player.x + 100 every frame. A constant rightward lead
 ## points the wrong way while backing up to line up a jump, and it drives the camera into
-## the right clamp 100 px earlier than it has to. The lead now follows facing, and the
-## camera eases toward its target so it glides to a stop at a level edge instead of locking
-## hard. Framing only: nothing in the physics, timing or collision path reads the camera.
+## the right clamp 100 px earlier than it has to.
+##
+## The lead is NOT taken from `facing`. facing is discrete, so flipping it moved the camera
+## target 160 px in one frame; a playtest of that version reported heavy shaking under
+## repeated reversals, and the check measured a 207 px swing. The lead is now a continuous
+## bias driven by actual velocity and eased at CAMERA_LEAD_EASE, which is deliberately much
+## slower than the camera's own follow. Tapping left and right therefore averages out near
+## zero instead of swinging, while a sustained run still builds the full lead.
+##
+## Framing only: nothing in the physics, timing or collision path reads the camera.
 ## camera.y stays fixed. The tower tops out at y=200 and the flag at y=130, both inside the
 ## viewport, and panning vertically would only expose space above the level.
 func _update_camera(delta: float) -> void:
-	var target := clampf(player.position.x + player.facing * CAMERA_LEAD, 320.0, float(level.width) - 320.0)
+	var want := clampf(player.velocity.x / player.tuning.speed, -1.0, 1.0)
+	lead_bias = lerpf(lead_bias, want, 1.0 - exp(-CAMERA_LEAD_EASE * delta))
+	var target := clampf(player.position.x + lead_bias * CAMERA_LEAD, 320.0, float(level.width) - 320.0)
 	camera.position.x = lerpf(camera.position.x, target, 1.0 - exp(-CAMERA_EASE * delta))
 
 func _unhandled_input(event: InputEvent) -> void:

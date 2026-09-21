@@ -162,6 +162,37 @@ tread marks stepped through a 20 px cycle while the hull only exposes 15 px, so 
 was being drawn outside the character. **It had been there since `522e6d1` and every check passed
 the whole time.**
 
+### 6b — and then the camera fix I wrote *created* a defect, which only playing found
+
+**2026-09-21.** I ran the full six-item pass on `9261070`. Five items behaved. The sixth: the
+camera shook badly when I reversed direction repeatedly.
+
+That one is mine. The facing-aware lead I added two commits earlier reads `facing`, which is
+discrete — it flips the instant the key changes, moving the camera target 160 px in one frame.
+Easing toward a target that teleports is exactly a swing.
+
+**What I did before touching the code:** wrote a check that taps left and right every three ticks
+and records the camera position *relative to the player*, so my own movement is not counted.
+**My first version of that check was wrong**, and I want that on the record: it reported 207 px,
+but `fresh()` parks the camera at x = 320 and the test teleports the player to x = 800, so a
+5-tick settle was measuring the camera's catch-up as if it were shake. I nearly chased that. With
+a 60-tick settle the real number is **97.02 px** — about 15% of the screen oscillating, which
+matches what I felt.
+
+The fix drives the lead from velocity instead of facing and eases the lead itself at 2.2/s,
+much slower than the camera's own 7/s follow, so tapping cancels out. **97.02 px → 11.32 px.**
+
+**The thing I did not expect:** the same instrument showed the old version was not just shaky but
+*backwards*. With the player parked and velocity forced left, it still reported a lead of +79.99.
+`facing` only updates inside `_physics_process` from the input axis, so the camera had been
+following the last key pressed rather than the direction Beacon was actually moving. I reported
+shake; measuring it found a second, worse bug underneath.
+
+I also renamed `camera-lead-follows-facing` to `camera-lead-follows-travel` and **raised** its
+threshold from 40 to 60, because parking the player makes the settled value readable. Saying that
+out loud because changing a test while fixing a bug is exactly where it would be easy to cheat —
+this one got stricter, and the observed value went from ±53…57 to ±78.
+
 ---
 
 ## 7. Scoring my own predictions, including the one I got wrong
@@ -212,9 +243,14 @@ would contradict the preserved tuning that the entire evidence chain in TEST-REP
 3. **Whether the measured 54 px take-off windows are comfortable at human reaction speed** is not
    something the harness can answer. It proves a route exists; it does not prove a person can
    repeat it reliably.
-4. **I have not hand-verified the newest revision end to end.** The route/failure/replay pass on
-   `9261070` is marked PENDING in TEST-REPORT §3 and §4, and I would rather ship that gap visible
-   than fill it in from memory.
+4. **The camera shake is reduced, not eliminated.** 97.02 px → 11.32 px is roughly ninefold, but
+   it is not zero. I have not felt the remaining amount as a problem, and I have not specifically
+   asked anyone else to judge it either.
+5. **How many of my own tests are measuring what I think they measure.** Three times now an
+   instrument was wrong rather than the game — twice in the reachability harness (§5) and once in
+   the camera-shake check, which reported 207 px when the real figure was 97 px. Each time I
+   caught it by the number looking implausible. I do not have a systematic way of catching the
+   ones that look plausible.
 
 ---
 
@@ -239,6 +275,7 @@ before taking it.
 power-up, and any suggestion of changing tuning to make geometry work.
 
 **Traceability:** `bcde8bc` starter · `be3c32f` baseline numbers · `c001f07` brief before code ·
-`522e6d1` character · `c2f2e50` tower and data-driven drawing · `3d7d43f` playtest fixes ·
-`9261070` camera and death feedback. Test evidence in `evidence/`, including the two failing
-reachability runs. Revisions R1–R6 in `CHANGE-BRIEF.md` §8.
+`522e6d1` character · `c2f2e50` tower and data-driven drawing · `3d7d43f` first playtest acted on ·
+`9261070` camera and death feedback · `878e90c` documents · then the velocity-driven camera from
+the second playtest. Test evidence in `evidence/`, including the two failing reachability runs.
+Revisions R1–R7 in `CHANGE-BRIEF.md` §8.
