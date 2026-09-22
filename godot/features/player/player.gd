@@ -18,6 +18,11 @@ var test_jump_held: bool = false
 ## Nothing in _physics_process reads these, so they cannot affect movement or collision.
 var dying: bool = false
 var dying_tick: int = 0
+## Impact feedback, drawing state only. Nothing here feeds movement or collision.
+var was_on_floor: bool = true
+var takeoff_tick: int = -1000
+var land_tick: int = -1000
+var land_impact: float = 0.0
 
 func _ready() -> void:
 	name = "Player"
@@ -42,6 +47,10 @@ func reset_at(spawn: Vector2) -> void:
 	jumps = 0
 	dying = false
 	dying_tick = 0
+	was_on_floor = true
+	takeoff_tick = -1000
+	land_tick = -1000
+	land_impact = 0.0
 	queue_redraw()
 
 func _physics_process(delta: float) -> void:
@@ -69,7 +78,17 @@ func _physics_process(delta: float) -> void:
 		opportunity_consumed = true
 		jump_request_tick = -1000
 		jumps += 1
+	# Fall speed has to be sampled before move_and_slide resolves the landing and zeroes it.
+	var approach_speed := velocity.y
 	move_and_slide()
+	# Drawing state only. Read in _draw() for dust and squash; never read back by physics.
+	var grounded := is_on_floor()
+	if was_on_floor and not grounded:
+		takeoff_tick = tick
+	elif not was_on_floor and grounded:
+		land_tick = tick
+		land_impact = clampf(approach_speed / tuning.terminal_velocity, 0.0, 1.0)
+	was_on_floor = grounded
 	position.x = maxf(position.x, 10.0)
 	queue_redraw()
 
@@ -87,13 +106,22 @@ func _draw() -> void:
 	var airborne := not is_on_floor()
 	var rolling := not wrecked and is_on_floor() and absf(velocity.x) > 8
 	var stride := sin(float(tick) * 0.7) * 2.0 if rolling else 0.0
-	var eye := Vector2(facing * 1.8, -19.5)
+	var eye := Vector2(facing * 1.8, -19.5)  # y is adjusted for squash once it is known
 	# Death is drawn by killing the lamp, because the lamp is the whole identity: the cone
 	# goes out, the eye drops to a dim red that flickers on a three-tick beat, and the
 	# antenna folds over. Not one of these moves the silhouette, so the art still matches
 	# the collider on the frame Beacon dies.
 	var flicker := wrecked and (dying_tick / 3) % 2 == 0
+	# Landing squash. The bottom edge never moves -- only the upper body compresses, so the
+	# edge the player actually reads for a landing still matches the collider exactly.
+	var since_land := tick - land_tick
+	var squash := 0.0
+	if not wrecked and since_land >= 0 and since_land < 6:
+		squash = (1.0 - float(since_land) / 6.0) * 2.5 * land_impact
+	eye.y += squash * 0.85
 	var eye_colour := Color("ffe08a") if airborne else lamp
+	if not wrecked and since_land >= 0 and since_land < 5 and land_impact > 0.45:
+		eye_colour = Color("fff6d8")
 	if wrecked:
 		eye_colour = Color("8d3a34") if flicker else Color("3b2f33")
 
@@ -109,6 +137,17 @@ func _draw() -> void:
 			Vector2(eye.x + facing * reach, eye.y - spread),
 			Vector2(eye.x + facing * reach, eye.y + spread)]), Color(1.0, 0.79, 0.29, 0.13))
 
+	# Track dust on take-off and on landing. Effects, not body: like the light cone these
+	# are allowed outside the collider box, and they are translucent so they never read as
+	# something Beacon can stand on.
+	if not wrecked:
+		for phase in [tick - takeoff_tick, since_land]:
+			if phase >= 0 and phase < 8:
+				var t := float(phase) / 8.0
+				var fade := (1.0 - t) * 0.32
+				draw_circle(Vector2(-7.0 - t * 6.0, -1.5), 2.0 + t * 6.5, Color(0.42, 0.47, 0.45, fade))
+				draw_circle(Vector2(7.0 + t * 6.0, -1.5), 1.6 + t * 5.5, Color(0.42, 0.47, 0.45, fade))
+
 	# Antenna: trails behind the facing direction, straightens up on a jump. Skipped while
 	# wrecked, where a snapped version is drawn after the housing instead -- folding it here
 	# just hid it behind the housing, which is drawn later.
@@ -117,9 +156,12 @@ func _draw() -> void:
 		draw_line(Vector2(0, -23.0), tip, ink, 2.0)
 		draw_circle(tip, 1.5, lamp_hot if airborne else steel_hi)
 
-	# Lamp housing, tapered outward toward the base like a lighthouse gallery.
-	draw_colored_polygon(PackedVector2Array([Vector2(-6,-24), Vector2(6,-24), Vector2(7,-15), Vector2(-7,-15)]), ink)
-	draw_colored_polygon(PackedVector2Array([Vector2(-5,-23), Vector2(5,-23), Vector2(6,-16), Vector2(-6,-16)]), steel)
+	# Lamp housing, tapered outward toward the base like a lighthouse gallery. Squash drops
+	# the upper body; the further above the tracks a point is, the more it moves.
+	var hi := squash
+	var mid := squash * 0.6
+	draw_colored_polygon(PackedVector2Array([Vector2(-6,-24+hi), Vector2(6,-24+hi), Vector2(7,-15+mid), Vector2(-7,-15+mid)]), ink)
+	draw_colored_polygon(PackedVector2Array([Vector2(-5,-23+hi), Vector2(5,-23+hi), Vector2(6,-16+mid), Vector2(-6,-16+mid)]), steel)
 
 	# The single eye. Its offset and pupil are the primary left/right facing cue.
 	draw_circle(eye, 4.2, ink)
@@ -137,10 +179,10 @@ func _draw() -> void:
 		draw_circle(snapped, 1.4, steel_hi)
 
 	# Collar and tapered hull. The hull bottom follows base_top so the two always meet.
-	draw_rect(Rect2(-8, -15, 16, 2), ink)
-	draw_colored_polygon(PackedVector2Array([Vector2(-6,-14), Vector2(6,-14), Vector2(8.5,base_top), Vector2(-8.5,base_top)]), ink)
-	draw_colored_polygon(PackedVector2Array([Vector2(-5,-13), Vector2(5,-13), Vector2(7.2,base_top-1), Vector2(-7.2,base_top-1)]), steel)
-	draw_rect(Rect2(-2, -12, 4, 2), Color("5a4340") if wrecked else lamp)
+	draw_rect(Rect2(-8, -15 + mid, 16, 2), ink)
+	draw_colored_polygon(PackedVector2Array([Vector2(-6,-14+mid), Vector2(6,-14+mid), Vector2(8.5,base_top), Vector2(-8.5,base_top)]), ink)
+	draw_colored_polygon(PackedVector2Array([Vector2(-5,-13+mid), Vector2(5,-13+mid), Vector2(7.2,base_top-1), Vector2(-7.2,base_top-1)]), steel)
+	draw_rect(Rect2(-2, -12 + mid * 0.5, 4, 2), Color("5a4340") if wrecked else lamp)
 
 	# Tracked base. The top edge tucks up on a jump, but the bottom edge stays on y=0
 	# so the drawn silhouette always ends exactly where the collider ends.

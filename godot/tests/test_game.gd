@@ -173,6 +173,50 @@ func run() -> void:
 		swing_lo = minf(swing_lo, rel)
 		swing_hi = maxf(swing_hi, rel)
 	check("camera-steady-under-rapid-reversal", (swing_hi - swing_lo) < 40.0, {"swing":swing_hi - swing_lo})
+	# MECH-03 edge cases, taken one for one from the starter's GDD.
+	# "A live player's overlap consumes one available cherry exactly once."
+	await fresh()
+	var c0: Array = game.level.cherries[0]
+	game.player.position = Vector2(c0[0], float(c0[1]) + 14.0)
+	await steps(12)
+	check("cherry-awarded-exactly-once", game.cherries == 1 and game.cherry_taken[0], {"cherries":game.cherries,"taken":game.cherry_taken[0]})
+	# "two different cherries in one tick award twice". The shipped cherries are far apart
+	# on purpose, so this fixture moves two boxes close enough that one 18x28 player spans
+	# both — otherwise the case cannot be exercised at all.
+	await fresh()
+	var pa := Vector2(700.0, 300.0)
+	var pb := Vector2(708.0, 300.0)
+	game.level.cherries[0] = [pa.x, pa.y]
+	game.level.cherries[1] = [pb.x, pb.y]
+	game.cherry_areas[0].position = pa - Vector2(7, 7)
+	game.cherry_areas[1].position = pb - Vector2(7, 7)
+	await steps(2)
+	var before: int = game.cherries
+	game.player.position = Vector2(704.0, 314.0)
+	await steps(3)
+	check("cherry-two-in-one-tick-award-twice", game.cherries - before == 2, {"gained":game.cherries - before})
+	# "a death resets all cherries and the attempt total"
+	await fresh()
+	game.player.position = Vector2(c0[0], float(c0[1]) + 14.0)
+	await steps(12)
+	var held: int = game.cherries
+	game.resolve_contacts(true, false)
+	await steps(45)
+	check("cherry-death-resets-all", held >= 1 and game.cherries == 0 and not game.cherry_taken[0] and game.state == Game.State.PLAYING, {"held":held,"after":game.cherries,"taken0":game.cherry_taken[0]})
+	# "a cherry overlapping a fatal hazard on the same tick is not awarded"
+	await fresh()
+	var hz: Array = game.level.hazards[0]
+	game.level.cherries[0] = [float(hz[0]) + 12.0, float(hz[1]) + 8.0]
+	game.cherry_areas[0].position = Vector2(float(hz[0]) + 12.0 - 7.0, float(hz[1]) + 8.0 - 7.0)
+	await steps(2)
+	game.player.position = Vector2(float(hz[0]) + 12.0, float(hz[1]) + 16.0)
+	await steps(4)
+	check("cherry-not-awarded-on-a-fatal-tick", game.state == Game.State.DYING and game.cherries == 0, {"state":game.state,"cherries":game.cherries,"deaths":game.deaths})
+	# "Collection is optional: zero cherries still permits completion." Cherries must never
+	# become a gate key.
+	await fresh()
+	game.resolve_contacts(false, true)
+	check("cherry-zero-still-completes", game.state == Game.State.COMPLETE and game.cherries == 0, {"state":game.state,"cherries":game.cherries})
 	await fresh()
 	var seen_low: float = 1e9
 	var seen_high: float = -1e9
@@ -192,7 +236,7 @@ func run() -> void:
 		route.step(game.player)
 		await steps(1)
 		route_ticks += 1
-	check("complete-real-route", game.state == Game.State.COMPLETE and game.deaths == 0, {"state":game.state,"deaths":game.deaths,"ticks":route_ticks,"position":str(game.player.position),"jump_marks_used":route.next_jump})
+	check("complete-real-route", game.state == Game.State.COMPLETE and game.deaths == 0, {"state":game.state,"deaths":game.deaths,"ticks":route_ticks,"position":str(game.player.position),"jump_marks_used":route.next_jump,"cherries":game.cherries})
 	game.start_session()
 	game.start_session()
 	check("replay-idempotent", game.state == Game.State.PLAYING and game.deaths == 0 and game.player.jumps == 0, {"state":game.state,"deaths":game.deaths,"jumps":game.player.jumps})

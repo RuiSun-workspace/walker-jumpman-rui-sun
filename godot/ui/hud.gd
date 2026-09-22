@@ -29,6 +29,9 @@ func _draw() -> void:
 	draw_rect(Rect2(22,63,596*progress,3), Color("287c68"))
 	draw_rect(Rect2(0,335,640,25), Color("f6f3ec"))
 	text_at("No lives. Just another try.", Vector2(22,353), 13)
+	# Observes the session's counter only. Per the GDD the HUD never decides whether an
+	# award is valid; the session owns that.
+	text_at("CHERRIES %d/%d" % [game.cherries, game.level.cherries.size()], Vector2(300,353), 13)
 	text_at("RETRIES %02d     %04.1fs" % [game.deaths, game.elapsed], Vector2(440,353), 13)
 	if game.state == game.State.PLAYING:
 		return
@@ -49,7 +52,8 @@ func _draw() -> void:
 		button = "ENTER  /  RESUME"
 	elif game.state == game.State.COMPLETE:
 		title = "Course complete."
-		detail = "%.1f seconds   /   %d retries" % [game.last_finish_time, game.deaths]
+		# GDD MECH-05: the completion card shows cherries collected and session deaths.
+		detail = "%.1f s   /   %d of %d cherries   /   %d retries" % [game.last_finish_time, game.cherries, game.level.cherries.size(), game.deaths]
 		button = "ENTER  /  PLAY AGAIN"
 	centered(title, 143, 24)
 	centered(detail, 177, 12)

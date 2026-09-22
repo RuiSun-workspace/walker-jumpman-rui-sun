@@ -59,6 +59,36 @@ func attempt(from: Vector2, target: Rect2) -> String:
 		return "missed"
 	return "landed"
 
+## Measures how much of a jump's SAFE take-off window also collects a given cherry.
+## A cherry whose collect window equals the safe window is free and is not a choice;
+## a narrow collect window inside a wide safe window is a real risk/reward decision.
+func cherry_cost(label: String, cherry_index: int, from_y: float, x0: float, x1: float, target: Rect2) -> void:
+	var safe := 0
+	var safe_and_cherry := 0
+	var x := x0
+	while x <= x1:
+		# cherry_taken is session state and reset_at() does not clear it, so without this
+		# every sample after the first reports "not collected" and the share reads ~3%.
+		# Earlier sweeps in this run have already eaten some of them too.
+		game.cherries = 0
+		for k in range(game.cherry_taken.size()):
+			game.cherry_taken[k] = false
+		var before: int = game.cherries
+		var result: String = await attempt(Vector2(x, from_y), target)
+		var got: bool = game.cherries > before
+		if result == "landed" or result == "finished":
+			safe += 1
+			if got:
+				safe_and_cherry += 1
+		x += 2.0
+	var share := 0.0 if safe == 0 else float(safe_and_cherry) / float(safe)
+	var row := {"cherry": label, "index": cherry_index, "safe_takeoffs": safe,
+		"also_collects": safe_and_cherry, "share_of_safe_window": snappedf(share, 0.01),
+		"reading": "on the main arc: a completion goal, not a risk choice" if share >= 0.8
+			else "off the main arc: needs a deliberate take-off"}
+	rows.append(row)
+	print(JSON.stringify(row))
+
 func sweep(label: String, from_y: float, x0: float, x1: float, target: Rect2) -> void:
 	var hits: Array[float] = []
 	var died := 0
@@ -122,6 +152,14 @@ func run() -> void:
 		if r == "landed":
 			survived += 1
 		x += 4.0
+	# MECH-03: how much of each jump's safe window also picks the cherry up.
+	await cherry_cost("over the starter spikes", 0, 320.0, 240.0, 302.0, Rect2(0, 320, 448, 64))
+	await cherry_cost("starter gap one", 1, 320.0, 394.0, 446.0, Rect2(512, 320, 224, 64))
+	await cherry_cost("starter gap two", 2, 320.0, 666.0, 734.0, Rect2(784, 320, 176, 64))
+	await cherry_cost("pedestal to step one", 3, 296.0, 1096.0, 1162.0, Rect2(1192, 280, 64, 16))
+	await cherry_cost("step one to step two", 4, 280.0, 1212.0, 1264.0, Rect2(1304, 240, 64, 16))
+	await cherry_cost("over the beacon gate", 5, 200.0, 1408.0, 1466.0, Rect2(1504, 200, 160, 16))
+
 	var gate := {"jump": "chasm is not walkable", "samples_4px": samples, "reached_far_side_on_foot": survived,
 		"status": "PASS" if survived == 0 else "FAIL"}
 	if survived != 0:

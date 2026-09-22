@@ -483,3 +483,71 @@ minus the camera's lag behind a moving target. Because the true value is now rea
 **threshold was raised from 40 to 60** — a tighter assertion, not a relaxed one. Observed values
 went from ±53…57 to ±78. `camera-steady-under-rapid-reversal` is new. `test_game.gd` is now 30
 checks. Nothing was removed.
+
+### R8 — 2026-09-21 — MECH-03 cherries implemented; impact feedback added; and the cherries did *not* become the decision I wanted.
+
+Rui asked, before recording the film, whether the game could still be improved, and picked two
+things: implement a collectible, and add landing/take-off feel.
+
+**MECH-03, implemented from the starter's own spec.** `GDD.md` specifies *Collect optional
+cherries* in full, and `BUILD-REPORT.md` says it was never implemented in the slice. Six here
+rather than the GDD's twenty, because this is one level slice — the mechanic is faithful, the
+content is not the full three-zone design. The design is the starter author's; the implementation
+is mine.
+
+Every clause of the spec is a check rather than a claim:
+
+| GDD clause | Check | Observed |
+| --- | --- | --- |
+| "overlap consumes one available cherry exactly once" | `cherry-awarded-exactly-once` | `cherries: 1` after 12 ticks of overlap |
+| "two different cherries in one tick award twice" | `cherry-two-in-one-tick-award-twice` | `gained: 2` |
+| "a death resets all cherries and the attempt total" | `cherry-death-resets-all` | held 1 → 0, `taken[0]` false |
+| "a cherry overlapping a fatal hazard on the same tick is not awarded" | `cherry-not-awarded-on-a-fatal-tick` | state DYING, `cherries: 0` |
+| "zero cherries still permits completion" | `cherry-zero-still-completes` | state COMPLETE, `cherries: 0` |
+
+Resolution order follows the GDD exactly — fatal; otherwise completion including valid same-tick
+cherries; otherwise collection — so collection runs only on a non-fatal tick and before the
+completion transition. The session owns the counter; the HUD only observes it.
+
+**The honest outcome: the cherries are not a risk choice.** The stated reason for adding them was
+to supply the player decision R1 could not build. `verify_reach.gd` now measures, per jump, what
+share of the *safe* take-off window also collects the cherry:
+
+| Cherry | Safe take-offs | Also collects | Share |
+| --- | --- | --- | --- |
+| over the starter spikes | 28 | 28 | **1.00** |
+| starter gap one | 27 | 27 | **1.00** |
+| starter gap two | 35 | 29 | 0.83 |
+| pedestal → step one | 34 | 29 | 0.85 |
+| step one → step two | 27 | 27 | **1.00** |
+| over the beacon gate | 30 | 29 | 0.97 |
+
+83–100%. They are free. My placement model — each cherry at the apex of the earliest or latest
+safe take-off, so taking it costs margin — was **wrong**, and wrong for a reason worth recording:
+the player is an 18×28 body sweeping a whole parabola, not a point tracing one. Anything *on* the
+arc is collected whatever the take-off timing.
+
+Making them optional needs cherries placed *off* every safe arc, which needs optional detour
+platforms. I tried to place those in the tower and could not: the airspace above each tower step
+is exactly where the next jump's parabola travels, so a ledge there blocks the main route. Same
+class of constraint as R1.
+
+So the cherries are what the GDD's *other* stated purpose calls them — a **replay and completion
+goal**, 6/6 on the HUD and on the finish card — and **not** the risk choice. The decision gap from
+R1 stays open and stays documented. The measurement lives in `verify_reach.gd` so the claim can be
+rechecked rather than believed.
+
+**A fourth instrument bug, found the same way as the earlier three.** The first run of that
+measurement reported 0–4% and looked like a triumph. It was wrong: `cherry_taken` is session state
+that `reset_at()` does not clear, so after the first sample every later one reported "not
+collected", and earlier sweeps in the same run had already eaten several. With the state reset per
+sample the real figure is 83–100%. **The flattering number was the broken one.**
+
+**Impact feedback.** Track dust on take-off and landing, an upper-body squash scaled by impact
+speed, and a lamp flash on a hard landing. All drawing state; nothing feeds movement or collision.
+The squash compresses only the upper body — **the bottom edge stays pinned to y = 0**, so the edge
+a player actually reads when judging a landing still matches the collider exactly. Dust is drawn
+outside the collider box like the light cone, and is translucent so it never reads as standable.
+
+`test_game.gd` is now 35 checks and `verify_reach.gd` 15. All pass, and every earlier observed
+value is unchanged.

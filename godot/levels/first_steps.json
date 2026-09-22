@@ -9,6 +9,8 @@
              [1008, 320, 168, 64], [1104, 296, 72, 24], [1192, 280, 64, 16], [1304, 240, 64, 16], [1416, 200, 248, 16]],
   "hazards": [[320, 304, 24, 16], [1480, 184, 24, 16]],
   "finish": [1584, 144, 24, 56],
+  "_cherries_note": "MECH-03. Each sits at the apex of the earliest or latest SAFE take-off for a jump the route already makes, so taking one means committing that jump to the edge of its measured window. Optional: zero cherries still completes.",
+  "cherries": [[358, 262], [502, 262], [790, 262], [1218, 238], [1268, 222], [1464, 146]],
   "hills": [100, 470, 770, 1080, 1400, 1640],
   "labels": [
     {"text": "01 / GET MOVING", "at": [33, 251], "size": 15},

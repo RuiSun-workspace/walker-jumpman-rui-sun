@@ -19,6 +19,16 @@ var test_mode: bool = false
 var contact_settle_ticks: int = 0
 ## Index of the hazard that just killed the player, or -1. Drawing only.
 var death_flash: int = -1
+## MECH-03 from the starter's GDD, designed there and never implemented in the slice.
+## Optional: zero cherries still completes. Not currency, health, or a gate key.
+## The session owns the counter -- a cherry never owns the score, and the HUD only
+## observes it. Six here rather than the GDD's twenty because this is one level slice.
+var cherry_areas: Array[Area2D] = []
+var cherry_taken: Array[bool] = []
+var cherries: int = 0
+var cherry_pops: Array = []
+const CHERRY_BOX := 14.0
+const CHERRY_POP_TICKS := 12
 ## Framing only. The starter used a constant +100 lead; see _update_camera().
 const CAMERA_LEAD := 80.0
 const CAMERA_EASE := 7.0
@@ -37,6 +47,10 @@ func _ready() -> void:
 	_add_solid(Rect2(level.width, 0, 32, 430))
 	for entry in level.hazards:
 		hazard_areas.append(_add_area(Rect2(entry[0], entry[1], entry[2], entry[3]), 8, true))
+	for entry in level.cherries:
+		var c := Vector2(entry[0], entry[1])
+		cherry_areas.append(_add_area(Rect2(c.x - CHERRY_BOX / 2.0, c.y - CHERRY_BOX / 2.0, CHERRY_BOX, CHERRY_BOX), 32, false))
+		cherry_taken.append(false)
 	var f: Array = level.finish
 	goal = _add_area(Rect2(f[0], f[1], f[2], f[3]), 16, false)
 	player = Player.new()
@@ -113,6 +127,11 @@ func restart_attempt() -> void:
 	contact_settle_ticks = 2
 	death_flash = -1
 	lead_bias = 0.0
+	# GDD MECH-04 reset list: cherry state and the attempt total return to initial values.
+	cherries = 0
+	for i in range(cherry_taken.size()):
+		cherry_taken[i] = false
+	cherry_pops.clear()
 	player.reset_at(Vector2(level.spawn[0], level.spawn[1]))
 	player.enabled = true
 	camera.position = Vector2(320, 180)
@@ -176,8 +195,19 @@ func _physics_process(delta: float) -> void:
 		if contact_settle_ticks > 0:
 			contact_settle_ticks -= 1
 		else:
+			# GDD: resolve once per tick as fatal; otherwise completion (including valid
+			# same-tick cherries); otherwise collection. A fatal event suppresses both
+			# completion and collection for that tick, so collection runs only when the
+			# tick is not fatal and runs before the completion transition.
+			if not fatal:
+				_collect_cherries()
 			resolve_contacts(fatal, goal.overlaps_body(player))
 		_update_camera(delta)
+		if not cherry_pops.is_empty():
+			for p in cherry_pops:
+				p.ticks -= 1
+			cherry_pops = cherry_pops.filter(func(p): return p.ticks > 0)
+			queue_redraw()
 	if is_instance_valid(hud):
 		hud.queue_redraw()
 
@@ -195,6 +225,20 @@ func _physics_process(delta: float) -> void:
 ## Framing only: nothing in the physics, timing or collision path reads the camera.
 ## camera.y stays fixed. The tower tops out at y=200 and the flag at y=130, both inside the
 ## viewport, and panning vertically would only expose space above the level.
+## One overlap consumes one cherry exactly once -- the taken flag, not the overlap, is
+## what gates the award, so repeated signals for the same cherry cannot double-count.
+## Two different cherries overlapped on the same tick award twice, which is why this
+## loops over all of them instead of returning on the first hit.
+func _collect_cherries() -> void:
+	for i in range(cherry_areas.size()):
+		if cherry_taken[i]:
+			continue
+		if cherry_areas[i].overlaps_body(player):
+			cherry_taken[i] = true
+			cherries += 1
+			cherry_pops.append({"pos": Vector2(level.cherries[i][0], level.cherries[i][1]), "ticks": CHERRY_POP_TICKS})
+			queue_redraw()
+
 func _update_camera(delta: float) -> void:
 	var want := clampf(player.velocity.x / player.tuning.speed, -1.0, 1.0)
 	lead_bias = lerpf(lead_bias, want, 1.0 - exp(-CAMERA_LEAD_EASE * delta))
@@ -262,6 +306,23 @@ func _draw() -> void:
 		for i in range(3):
 			var x: float = float(entry[0]) + float(i) * float(entry[2]) / 3.0
 			draw_colored_polygon(PackedVector2Array([Vector2(x,base),Vector2(x+4,top),Vector2(x+8,base)]), spike)
+	# Cherries. ASSET-PLAN ART-003 asks for a round fruit with a stem, distinct from the
+	# hazard and recognisable without colour alone: round beside the spikes' triangles, and
+	# a berry pink that is deliberately not the hazard red d24e42 or Beacon's amber.
+	for i in range(level.cherries.size()):
+		if cherry_taken[i]:
+			continue
+		var c := Vector2(level.cherries[i][0], level.cherries[i][1])
+		draw_line(c + Vector2(0, -3), c + Vector2(4, -9), Color("3f6d4a"), 2.0)
+		draw_circle(c + Vector2(-2.6, 1.5), 4.2, ink)
+		draw_circle(c + Vector2(2.6, 1.5), 4.2, ink)
+		draw_circle(c + Vector2(-2.6, 1.5), 3.2, Color("b5476b"))
+		draw_circle(c + Vector2(2.6, 1.5), 3.2, Color("d96a8c"))
+	# Short consumption cue: an expanding ring where the cherry was.
+	for p in cherry_pops:
+		var t: float = 1.0 - float(p.ticks) / float(CHERRY_POP_TICKS)
+		draw_arc(p.pos, 4.0 + t * 13.0, 0.0, TAU, 24, Color(0.85, 0.42, 0.55, 1.0 - t), 2.0)
+
 	# Finish marker, anchored to the finish rectangle so it follows the goal Area2D.
 	var f: Array = level.finish
 	var fx: float = float(f[0])
