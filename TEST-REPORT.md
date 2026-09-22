@@ -22,9 +22,9 @@ All three suites at the current revision, run 2026-09-21 in one sitting.
 
 | Suite | Command | Result | Raw evidence |
 | --- | --- | --- | --- |
-| Mechanics | `--script res://tests/test_game.gd` | **30 checks / 0 failures** | `evidence/mechanics-1790010907.48.json` |
-| Keyboard | `--script res://tests/test_keyboard.gd` | **9 checks / 0 failures** | `evidence/keyboard-1790010908.811.json` |
-| Reachability | `--script res://tests/verify_reach.gd` | **9 jumps / 0 failures** | `evidence/reach-1790011175.046.json` |
+| Mechanics | `--script res://tests/test_game.gd` | **35 checks / 0 failures** | latest `evidence/mechanics-*.json` |
+| Keyboard | `--script res://tests/test_keyboard.gd` | **9 checks / 0 failures** | latest `evidence/keyboard-*.json` |
+| Reachability + cherry cost | `--script res://tests/verify_reach.gd` | **15 rows / 0 failures** | latest `evidence/reach-*.json` |
 
 `evidence/` also retains every earlier run, including the two that **failed**
 (`reach-1789859412.664.json`, `reach-1789859855.182.json`). They are kept on purpose; see §5.
@@ -176,6 +176,19 @@ This is a defect **I introduced in `9261070`**, not a starter problem. Diagnosed
 
 ---
 
+### Session 6 — 2026-09-21 — after the MECH-03 cherries and the impact feedback
+
+Asked to judge two things that no automated check can judge: whether the new landing and
+take-off feedback improves the feel, and whether the cherries are legible against the spikes.
+
+> "手感和樱桃的可读性都没有问题"
+> (both the feel and the cherry readability are fine)
+
+Recorded as a **blanket approval of those two questions**, not as a fresh full-route pass; the
+route, failure, replay and pause pass in session 5 was not repeated on this revision.
+
+---
+
 ## 4. Required check table
 
 | Check | Evidence | Result |
@@ -311,10 +324,15 @@ Stated plainly rather than presented as solved.
 2. **The camera never moves vertically.** `camera.y` is a constant 180. The tower fits inside the
    viewport by design (summit y = 200, flag y = 130, HUD bar ends at y = 74), so this is a
    deliberate constraint on how tall the level may ever get, not a solved problem.
-3. **The extension is challenge-led, not choice-led.** CHANGE-BRIEF promised two converging
-   routes. That is geometrically impossible with this tuning (CHANGE-BRIEF R1) and the level now
-   has one route with five committed jumps. The starter's own unimplemented `MECH-03` optional
-   cherries would supply the missing decision; they are not implemented here.
+3. **The extension is challenge-led, not choice-led — and the cherries did not fix that.**
+   CHANGE-BRIEF promised two converging routes; that is geometrically impossible with this
+   tuning (R1). `MECH-03` cherries were then implemented specifically to supply the missing
+   decision, and **measurement says they do not**: 83–100% of each jump's safe take-off window
+   also collects the cherry (CHANGE-BRIEF R8), because the player is an 18×28 body sweeping the
+   whole parabola rather than a point tracing it. Optional cherries would need detour platforms
+   off every safe arc, and the tower's airspace is exactly where the next jump travels. The
+   cherries are therefore a **completion and replay goal**, which is the GDD's other stated
+   purpose for them, and the decision gap stays open.
 4. **One playtester.** Only the author has played this. No second person has been observed
    playing it, and none is claimed.
 5. **The route fixture is not a human.** It holds right and jumps at fixed x positions. It proves
