@@ -126,8 +126,31 @@ Claude Code was used throughout, as the assignment expects. Splitting it honestl
 - It did not invent a second playtester. There isn't one.
 - It did not generate any art, audio, or imported asset.
 
-Film credits — narration, beat sheet, and visuals — will be recorded here once the Brutalist
-explainer is produced.
+### The film
+
+Produced with the course-provided Brutalist `godot-waikthrough` skill in **walker** mode.
+Full authoring record in [film/](film/); reproducible steps in `film/BUILD-PROMPT.md`.
+
+| Element | Who | Note |
+| --- | --- | --- |
+| **Gameplay footage** | Recorded by a script I approved | One continuous 34.3 s take at native 3840×2160 from Godot's Movie Maker, driven only by real `InputEventKey` events. No teleports, no state setting, no test-only shortcuts. Both deaths on screen are real. Labelled `scripted-input` everywhere — **not a human playtest**. |
+| **Narration voice** | **AI — Kokoro `am_onyx`, local** | "Liam, in for Bear", the toolkit's standard AI narrator. No paid TTS, no cloud call. Identified as AI in the opening and at the sign-off. |
+| **Narration script** | Claude drafted, I directed and cut | I set the structure and the honesty constraints; Claude wrote the prose. Two riffs were cut for accuracy — see `film/RIFF.md`. |
+| **Beat sheet** | Claude | Structure follows the skill's walker-mode requirement and the toolkit's own `godot-gamedev` precedent. |
+| **Visuals (non-gameplay)** | **AI-rendered from the toolkit's own components** | `ClaudeComposerAsk`, `BrutalistHesitantWriter`, `GodotDevWorkbench`, `SkillTeardownMechanism`, `ClaudeVerdictArtifact`, `ClaudeTitleOutro` — all ship with Brutalist and were not drawn by me. The props are mine. |
+| **Code shown on screen** | Mine and the starter's, **verbatim** | B03 is this project's `session.gd`; B07 is the **starter's** original hazard loop at `bcde8bc`. Both labelled verbatim, unlike the toolkit's teaching illustrations. |
+| **B00's prompt** | Claude wrote it, labelled as reconstruction | An illustrative reconstruction of the ask, not a transcript. Said so in the narration, the beat's `role_note`, and the metadata. |
+| **Fact-check** | Claude drafted from the actual outputs; I required it exist | `film/FACTCHECK.md` traces every number to a file, a test, or a measurement, and flags judgments as judgments. |
+
+**Film decisions that were mine:** the shot plan and recording one continuous take;
+capturing from an isolated copy so no capture config touched the submitted source; sizing
+narration to the clip rather than letting the compositor slow the footage; and requiring
+that Gate V's one real finding — B01's text overflowing the frame — be fixed rather than
+declared exempt.
+
+**No paid media generation of any kind.** No stock footage, no licensed music, no image
+generation. The only audio is locally synthesised narration plus the toolkit's own stock
+outro jingle.
 
 ---
 

@@ -187,12 +187,43 @@ Results, the full human playtest log, and the two reachability runs that genuine
 | [TEST-REPORT.md](TEST-REPORT.md) | Automated results, baseline comparison, human playtest log, limitations |
 | [FRICTIONAL.md](FRICTIONAL.md) | Honest log — what I tried, what surprised me, what I rejected |
 | [SOURCES.md](SOURCES.md) | Starter credit, tools, and the human/AI split |
+| [film/](film/) | The explainer's beat sheet, coverage contract, fact-check, shot list, prompts, input log and QC report |
 
 ## Final film
 
-**Not yet produced.** This section will carry the film URL, filename, and SHA-256 checksum, and
-will name the exact game-source revision demonstrated. MP4 files are excluded from this
-repository by `.gitignore` and will live in the course media storage.
+**[▶ Watch the film](https://northeastern-my.sharepoint.com/:v:/g/personal/sun_r3_northeastern_edu/IQDqDx3xiwwsRLmp6MLOgMnLAY9sLFPMN-FauK6ICBKZ_gM?e=AyiTai)**
+— Northeastern OneDrive, viewable by anyone signed in with a Northeastern account.
+
+| Field | Value |
+| --- | --- |
+| Filename | `claude-liam-walker-jumpman-rui-sun-walkthrough.mp4` |
+| SHA-256 | `5a7c346e81c2e0afbe5b274161a24c376789ee3c931d3908c14cdfe28023964c` |
+| Format | 3840×2160 h264, 30 fps, AAC 48 kHz stereo |
+| Duration | 270.767 s (4 min 31 s) · 22.69 MB |
+| Game revision demonstrated | `8a4d63d04251030607222c88a2d517002c0c10fd` |
+| Workflow | Brutalist `godot-waikthrough`, **walker** mode |
+| Hosting | Northeastern OneDrive; link scope "People in Northeastern University with the link", view-only, no expiry date |
+
+Verify you have the same file the checksum names:
+
+```bash
+sha256sum claude-liam-walker-jumpman-rui-sun-walkthrough.mp4
+# 5a7c346e81c2e0afbe5b274161a24c376789ee3c931d3908c14cdfe28023964c
+```
+
+The film's beat sheet, narration, prompts, fact-check, shot list, input log and QC report
+are all in [film/](film/) — a reviewer can check every claim the film makes without
+downloading it. MP4 and MP3 are excluded from this repository by `.gitignore`.
+
+**Quality gates, both passed on the delivered file:**
+
+| Gate | Result |
+| --- | --- |
+| Gate V frame QC (`final_frame_check.py`, not `--lenient`) | **0 BLOCKER, 0 MAJOR** |
+| Evidence contract (`verify_walkthrough.py`) | **PASS** — 15 implemented features with timed evidence, 6 planned with reasons, capture verified at 3840×2160 |
+
+A `verified.json` receipt sits beside the master recording its SHA-256 plus the SHA-256 of
+all 23 input clips and audio files, so any later edit to an input invalidates the master.
 
 ---
 

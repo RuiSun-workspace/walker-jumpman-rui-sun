@@ -1,0 +1,69 @@
+{"cherries":0,"deaths":0,"detail":"menu","kind":"beat","phys_tick":0,"player":[64.0,320.0],"player_tick":0,"state":0,"t_s":0.0}
+{"cherries":0,"deaths":0,"detail":"Enter","kind":"press","phys_tick":60,"player":[64.0,320.0],"player_tick":0,"state":0,"t_s":2.0}
+{"cherries":0,"deaths":0,"detail":"Enter","kind":"release","phys_tick":63,"player":[64.0,320.0],"player_tick":6,"state":1,"t_s":2.1}
+{"cherries":0,"deaths":0,"detail":"started from the menu","kind":"beat","phys_tick":66,"player":[64.0,320.0],"player_tick":12,"state":1,"t_s":2.2}
+{"cherries":0,"deaths":0,"detail":"D","kind":"press","phys_tick":86,"player":[64.0,320.0],"player_tick":52,"state":1,"t_s":2.867}
+{"cherries":0,"deaths":0,"detail":"Space","kind":"press","phys_tick":102,"player":[140.6,319.9],"player_tick":84,"state":1,"t_s":3.4}
+{"cherries":0,"deaths":0,"detail":"Space","kind":"release","phys_tick":105,"player":[156.6,291.9],"player_tick":90,"state":1,"t_s":3.5}
+{"cherries":0,"deaths":1,"detail":"hazard death: Watch the spikes","kind":"beat","phys_tick":135,"player":[316.6,319.9],"player_tick":150,"state":3,"t_s":4.5}
+{"cherries":0,"deaths":1,"detail":"auto retry at spawn","kind":"beat","phys_tick":159,"player":[92.6,319.9],"player_tick":164,"state":1,"t_s":5.3}
+{"cherries":0,"deaths":1,"detail":"Space","kind":"press","phys_tick":171,"player":[151.0,320.0],"player_tick":188,"state":1,"t_s":5.7}
+{"cherries":0,"deaths":1,"detail":"Space","kind":"release","phys_tick":174,"player":[153.1,292.0],"player_tick":194,"state":1,"t_s":5.8}
+{"cherries":0,"deaths":1,"detail":"Space","kind":"press","phys_tick":201,"player":[294.2,319.9],"player_tick":248,"state":1,"t_s":6.7}
+{"cherries":0,"deaths":1,"detail":"Space","kind":"release","phys_tick":204,"player":[310.2,291.9],"player_tick":254,"state":1,"t_s":6.8}
+{"cherries":1,"deaths":1,"detail":"Space","kind":"press","phys_tick":226,"player":[427.5,319.9],"player_tick":298,"state":1,"t_s":7.533}
+{"cherries":1,"deaths":1,"detail":"Space","kind":"release","phys_tick":229,"player":[443.5,291.9],"player_tick":304,"state":1,"t_s":7.633}
+{"cherries":2,"deaths":1,"detail":"Space","kind":"press","phys_tick":249,"player":[550.2,319.9],"player_tick":344,"state":1,"t_s":8.3}
+{"cherries":2,"deaths":1,"detail":"Space","kind":"release","phys_tick":252,"player":[566.2,291.9],"player_tick":350,"state":1,"t_s":8.4}
+{"cherries":2,"deaths":1,"detail":"Space","kind":"press","phys_tick":282,"player":[715.5,319.9],"player_tick":410,"state":1,"t_s":9.4}
+{"cherries":2,"deaths":1,"detail":"Space","kind":"release","phys_tick":285,"player":[731.5,291.9],"player_tick":416,"state":1,"t_s":9.5}
+{"cherries":3,"deaths":1,"detail":"Space","kind":"press","phys_tick":317,"player":[902.2,319.9],"player_tick":480,"state":1,"t_s":10.567}
+{"cherries":3,"deaths":1,"detail":"Space","kind":"release","phys_tick":320,"player":[918.2,291.9],"player_tick":486,"state":1,"t_s":10.667}
+{"cherries":3,"deaths":1,"detail":"D","kind":"release","phys_tick":338,"player":[1014.2,319.9],"player_tick":522,"state":1,"t_s":11.267}
+{"cherries":3,"deaths":1,"detail":"Escape","kind":"press","phys_tick":356,"player":[1019.6,319.9],"player_tick":558,"state":1,"t_s":11.867}
+{"cherries":3,"deaths":1,"detail":"Escape","kind":"release","phys_tick":359,"player":[1019.6,319.9],"player_tick":558,"state":2,"t_s":11.967}
+{"cherries":3,"deaths":1,"detail":"paused","kind":"beat","phys_tick":362,"player":[1019.6,319.9],"player_tick":558,"state":2,"t_s":12.067}
+{"cherries":3,"deaths":1,"detail":"Enter","kind":"press","phys_tick":407,"player":[1019.6,319.9],"player_tick":558,"state":2,"t_s":13.567}
+{"cherries":3,"deaths":1,"detail":"Enter","kind":"release","phys_tick":410,"player":[1019.6,319.9],"player_tick":564,"state":1,"t_s":13.667}
+{"cherries":3,"deaths":1,"detail":"resumed","kind":"beat","phys_tick":413,"player":[1019.6,319.9],"player_tick":570,"state":1,"t_s":13.767}
+{"cherries":3,"deaths":1,"detail":"D","kind":"press","phys_tick":425,"player":[1019.6,319.9],"player_tick":594,"state":1,"t_s":14.167}
+{"cherries":3,"deaths":1,"detail":"Space","kind":"press","phys_tick":426,"player":[1020.6,319.9],"player_tick":596,"state":1,"t_s":14.2}
+{"cherries":3,"deaths":1,"detail":"Space","kind":"release","phys_tick":429,"player":[1032.2,291.9],"player_tick":602,"state":1,"t_s":14.3}
+{"cherries":3,"deaths":1,"detail":"Space","kind":"press","phys_tick":445,"player":[1117.5,295.9],"player_tick":634,"state":1,"t_s":14.833}
+{"cherries":3,"deaths":1,"detail":"Space","kind":"release","phys_tick":448,"player":[1133.5,267.9],"player_tick":640,"state":1,"t_s":14.933}
+{"cherries":4,"deaths":2,"detail":"fall death: Missed the landing","kind":"beat","phys_tick":490,"player":[1357.5,436.1],"player_tick":724,"state":3,"t_s":16.333}
+{"cherries":0,"deaths":2,"detail":"R","kind":"press","phys_tick":526,"player":[151.0,320.0],"player_tick":762,"state":1,"t_s":17.533}
+{"cherries":0,"deaths":2,"detail":"R","kind":"release","phys_tick":529,"player":[71.5,319.9],"player_tick":768,"state":1,"t_s":17.633}
+{"cherries":0,"deaths":2,"detail":"manual retry, deaths 2 -> 2","kind":"beat","phys_tick":532,"player":[87.3,319.9],"player_tick":774,"state":1,"t_s":17.733}
+{"cherries":0,"deaths":2,"detail":"Space","kind":"press","phys_tick":552,"player":[151.0,320.0],"player_tick":814,"state":1,"t_s":18.4}
+{"cherries":0,"deaths":2,"detail":"Space","kind":"release","phys_tick":555,"player":[153.1,292.0],"player_tick":820,"state":1,"t_s":18.5}
+{"cherries":0,"deaths":2,"detail":"Space","kind":"press","phys_tick":582,"player":[294.2,319.9],"player_tick":874,"state":1,"t_s":19.4}
+{"cherries":0,"deaths":2,"detail":"Space","kind":"release","phys_tick":585,"player":[310.2,291.9],"player_tick":880,"state":1,"t_s":19.5}
+{"cherries":1,"deaths":2,"detail":"Space","kind":"press","phys_tick":607,"player":[427.5,319.9],"player_tick":924,"state":1,"t_s":20.233}
+{"cherries":1,"deaths":2,"detail":"Space","kind":"release","phys_tick":610,"player":[443.5,291.9],"player_tick":930,"state":1,"t_s":20.333}
+{"cherries":2,"deaths":2,"detail":"Space","kind":"press","phys_tick":630,"player":[550.2,319.9],"player_tick":970,"state":1,"t_s":21.0}
+{"cherries":2,"deaths":2,"detail":"Space","kind":"release","phys_tick":633,"player":[566.2,291.9],"player_tick":976,"state":1,"t_s":21.1}
+{"cherries":2,"deaths":2,"detail":"Space","kind":"press","phys_tick":663,"player":[715.5,319.9],"player_tick":1036,"state":1,"t_s":22.1}
+{"cherries":2,"deaths":2,"detail":"Space","kind":"release","phys_tick":666,"player":[731.5,291.9],"player_tick":1042,"state":1,"t_s":22.2}
+{"cherries":3,"deaths":2,"detail":"Space","kind":"press","phys_tick":698,"player":[902.2,319.9],"player_tick":1106,"state":1,"t_s":23.267}
+{"cherries":3,"deaths":2,"detail":"Space","kind":"release","phys_tick":701,"player":[918.2,291.9],"player_tick":1112,"state":1,"t_s":23.367}
+{"cherries":3,"deaths":2,"detail":"Space","kind":"press","phys_tick":721,"player":[1024.9,319.9],"player_tick":1152,"state":1,"t_s":24.033}
+{"cherries":3,"deaths":2,"detail":"Space","kind":"release","phys_tick":724,"player":[1040.9,291.9],"player_tick":1158,"state":1,"t_s":24.133}
+{"cherries":3,"deaths":2,"detail":"Space","kind":"press","phys_tick":740,"player":[1126.2,295.9],"player_tick":1190,"state":1,"t_s":24.667}
+{"cherries":3,"deaths":2,"detail":"Space","kind":"release","phys_tick":743,"player":[1142.2,267.9],"player_tick":1196,"state":1,"t_s":24.767}
+{"cherries":4,"deaths":2,"detail":"Space","kind":"press","phys_tick":759,"player":[1227.5,279.9],"player_tick":1228,"state":1,"t_s":25.3}
+{"cherries":4,"deaths":2,"detail":"Space","kind":"release","phys_tick":762,"player":[1243.5,251.9],"player_tick":1234,"state":1,"t_s":25.4}
+{"cherries":5,"deaths":2,"detail":"Space","kind":"press","phys_tick":779,"player":[1334.2,239.9],"player_tick":1268,"state":1,"t_s":25.967}
+{"cherries":5,"deaths":2,"detail":"Space","kind":"release","phys_tick":782,"player":[1350.2,211.9],"player_tick":1274,"state":1,"t_s":26.067}
+{"cherries":5,"deaths":2,"detail":"Space","kind":"press","phys_tick":796,"player":[1424.9,199.9],"player_tick":1302,"state":1,"t_s":26.533}
+{"cherries":5,"deaths":2,"detail":"Space","kind":"release","phys_tick":799,"player":[1440.9,171.9],"player_tick":1308,"state":1,"t_s":26.633}
+{"cherries":6,"deaths":2,"detail":"D","kind":"release","phys_tick":826,"player":[1582.2,199.9],"player_tick":1361,"state":4,"t_s":27.533}
+{"cherries":6,"deaths":2,"detail":"completed: 9.98s, 6 cherries, 2 retries","kind":"beat","phys_tick":826,"player":[1582.2,199.9],"player_tick":1361,"state":4,"t_s":27.533}
+{"cherries":6,"deaths":2,"detail":"Enter","kind":"press","phys_tick":901,"player":[1582.2,199.9],"player_tick":1361,"state":4,"t_s":30.033}
+{"cherries":0,"deaths":0,"detail":"Enter","kind":"release","phys_tick":904,"player":[64.0,320.0],"player_tick":1367,"state":1,"t_s":30.133}
+{"cherries":0,"deaths":0,"detail":"replay: deaths 0 cherries 0","kind":"beat","phys_tick":907,"player":[64.0,320.0],"player_tick":1373,"state":1,"t_s":30.233}
+{"cherries":0,"deaths":0,"detail":"Escape","kind":"press","phys_tick":952,"player":[64.0,320.0],"player_tick":1463,"state":1,"t_s":31.733}
+{"cherries":0,"deaths":0,"detail":"Escape","kind":"release","phys_tick":955,"player":[64.0,320.0],"player_tick":1463,"state":2,"t_s":31.833}
+{"cherries":0,"deaths":0,"detail":"M","kind":"press","phys_tick":976,"player":[64.0,320.0],"player_tick":1463,"state":2,"t_s":32.533}
+{"cherries":0,"deaths":0,"detail":"M","kind":"release","phys_tick":979,"player":[64.0,320.0],"player_tick":1463,"state":0,"t_s":32.633}
+{"cherries":0,"deaths":0,"detail":"back to the main menu","kind":"beat","phys_tick":982,"player":[64.0,320.0],"player_tick":1463,"state":0,"t_s":32.733}

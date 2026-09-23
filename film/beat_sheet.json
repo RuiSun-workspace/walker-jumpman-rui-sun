@@ -1,0 +1,740 @@
+{
+  "metadata": {
+    "title": "Walker Jumpman: Beacon Tower",
+    "slug": "claude-liam-walker-jumpman-rui-sun-walkthrough",
+    "topic": "WALKER · JUMPMAN: BEACON TOWER",
+    "kind": "walkthrough",
+    "playlist": "Brutalist",
+    "brand": "claude-liam",
+    "audience": "CSYE 7270 reviewers and Walker readers",
+    "register": "Teardown",
+    "engine": "kokoro",
+    "voice": "am_onyx",
+    "voice_kokoro": "am_onyx",
+    "palette": "claude",
+    "style_preset": "claude",
+    "ground": "#FAF9F5",
+    "aspect_ratio": "16:9",
+    "fit": "contain",
+    "captions": false,
+    "channel": "@NikBearBrown",
+    "channel_title": "@NikBearBrown",
+    "folderLabel": "@NikBearBrown",
+    "greeting": "Zdravo, Liam",
+    "greeting_note": "hello lexicon: Zdravo (Serbian/Croatian, one word). Fresh - not used by any existing reel in this toolkit. Slug char-sum 4595, mod 10 == 5, so not the Wagwan slot; Wagwan stays Bear's alone.",
+    "persona": "Liam (in for Bear)",
+    "presenter": "Liam (in for Bear)",
+    "in_for_bear": true,
+    "episode_id": "walker-jumpman-rui-sun-walkthrough",
+    "note": "godot-waikthrough in walker mode over walker-jumpman-rui-sun, a CSYE 7270 Assignment 1 extension of nikbearbrown/walker-jumpman. Game source commit 8a4d63d04251030607222c88a2d517002c0c10fd, build_id 1892d76f5d742b612041dd6587f95bcaaa38cc77399eb23e7f88ee0e6cad1732, engine Godot 4.7.2.stable.official.ed1daf0bf. Gameplay in B02, B04, B06 and B08 is native 3840x2160 Godot Movie Maker output from one continuous scripted-input take, capture/run-01.mp4, sha256 42eb71711195b5c5d9386ec07f20b7c258ba7232352a594dc2f1203d205bccd8; the four clips are consecutive, non-overlapping trims covering the whole take. Gameplay narration is deliberately sized to the clip so no footage is retimed or centre-cut; the mechanism explanation lives in the graphic beats B03, B05 and B07. Code shown in B03 and B07 is VERBATIM project source, not a teaching reconstruction. B00's prompt IS an illustrative reconstruction, not a historical transcript. The game has no audio of any kind, so nothing was muted and no sound effect was fabricated. No paid API, no upload, no network calls.",
+    "approvals": {},
+    "links": {
+      "game_repo": "https://github.com/RuiSun-workspace/walker-jumpman-rui-sun",
+      "starter_repo": "https://github.com/nikbearbrown/walker-jumpman",
+      "player_draw": "godot/features/player/player.gd",
+      "level_data": "godot/levels/first_steps.json",
+      "session": "godot/game/session.gd",
+      "reach_harness": "godot/tests/verify_reach.gd"
+    },
+    "tags": [
+      "Walker",
+      "walker-jumpman",
+      "Godot",
+      "GDScript",
+      "walkthrough",
+      "CSYE 7270",
+      "Beacon Tower",
+      "collision box",
+      "reachability",
+      "MECH-03",
+      "Kokoro",
+      "Claude"
+    ],
+    "build": {
+      "at": "2026-09-22T01:47:05",
+      "cut": "master",
+      "filled": 12,
+      "of": 12,
+      "slates": [],
+      "skin_warnings": []
+    }
+  },
+  "beats": [
+    {
+      "beat_id": "B00",
+      "act": "ASK",
+      "role_note": "COLD OPEN LAW - Claude UI cold open. The prompt is an ILLUSTRATIVE RECONSTRUCTION of the walker ask, never presented as a transcript.",
+      "narration_text": "Zdravo, this is Liam, in for Bear. The ask, reconstructed: take a design document about a small Godot platformer, keep every movement value the starter already tuned, give the character a new identity, and extend the actual level so the finish has to be earned. Then prove the jumps are reachable instead of asserting it.",
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "estimated_duration_s": 22,
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "remotion",
+        "motion": "type-on",
+        "show": [
+          {
+            "at": "0.02",
+            "event": "composer card fades in on cream"
+          },
+          {
+            "at": "0.10",
+            "event": "greeting 'Zdravo, Liam' types above the composer"
+          },
+          {
+            "at": "0.28",
+            "event": "the reconstructed ask types in"
+          },
+          {
+            "at": "0.86",
+            "event": "output lines cascade under the composer"
+          }
+        ],
+        "remotion": {
+          "pattern": "ClaudeComposerAsk",
+          "props": {
+            "greeting": "Zdravo, Liam",
+            "topic": "WALKER · JUMPMAN: BEACON TOWER",
+            "segment": "walker-jumpman-rui-sun",
+            "command": "Please use Walker to convert my game design document about a compact 2D Godot platformer - read the landing, commit to one fixed-height jump, die fast, retry instantly - into a playable Godot project. Keep the starter's tuning untouched. Replace the character's visual identity. Extend the real level so the flag can only be reached through the new section. Measure every jump rather than trusting the arithmetic.",
+            "runningText": "reading GDD.md, tuning.gd, first_steps.json; measuring take-off windows…",
+            "output": [
+              "character: _draw() only - tuning.gd and the 18x28 collider untouched",
+              "level: 960 -> 1664 px, four new landings over a chasm with no floor, flag moved to the summit",
+              "proof: verify_reach.gd sweeps the real player 2 px at a time; 0 of 40 ground take-offs cross the chasm"
+            ],
+            "folderLabel": "@NikBearBrown",
+            "modelLabel": "Claude",
+            "effortLabel": "Opus"
+          },
+          "rendered": {
+            "out": "media/B00.mp4",
+            "at": "2026-09-22T03:26:48.681412+00:00"
+          }
+        }
+      },
+      "actual_duration_s": 17.28,
+      "audio_file": "mp3/beat-B00.mp3",
+      "render_duration_s": 17.3,
+      "build": {
+        "status": "VIDEO",
+        "src": "media\\B00.mp4",
+        "filled_by": "remotion:ClaudeComposerAsk",
+        "at": "2026-09-22T01:47:05"
+      }
+    },
+    {
+      "beat_id": "B01",
+      "act": "BLUF",
+      "role_note": "What was actually built, with one meaningful correction. States the slice's limits, not the full GDD's promises.",
+      "narration_text": "The name fools you. This is not the three-zone course the design document proposes. It is one level slice: the starter's two gaps and one spike cluster, plus a new tower where the floor stops existing. Four new landings, a spike gate, and a flag you have to climb to. And the correction worth making early - the brief promised two converging routes so the player could choose a risk level. That turned out to be geometrically impossible. This film shows why, and what replaced it.",
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "estimated_duration_s": 30,
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "remotion",
+        "motion": "type-on",
+        "show": [
+          {
+            "at": "0.05",
+            "event": "'walker-jumpman / two routes.' types out in serif"
+          },
+          {
+            "at": "0.55",
+            "event": "'two routes' is struck and replaced by 'one climb'"
+          }
+        ],
+        "remotion": {
+          "pattern": "BrutalistHesitantWriter",
+          "props": {
+            "text": "walker-jumpman\ntwo routes.",
+            "triggerWords": "two, routes",
+            "replacementWords": "one, climb",
+            "seed": "beacon-tower-b01",
+            "face": "serif",
+            "fontSize": 210,
+            "lineSpacing": 2.6,
+            "align": "center",
+            "charMs": 26,
+            "jitter": 18,
+            "mistakeRate": 0,
+            "hesitateWithin": 0,
+            "hesitateBetween": 0
+          },
+          "rendered": {
+            "out": "media/B01.mp4",
+            "at": "2026-09-22T05:19:33.714723+00:00"
+          }
+        }
+      },
+      "actual_duration_s": 22.763,
+      "audio_file": "mp3/beat-B01.mp3",
+      "render_duration_s": 22.766666666666666,
+      "build": {
+        "status": "VIDEO",
+        "src": "media\\B01.mp4",
+        "filled_by": "remotion:BrutalistHesitantWriter",
+        "at": "2026-09-22T01:47:05"
+      }
+    },
+    {
+      "beat_id": "B02",
+      "act": "GAMEPLAY",
+      "role_note": "SCRIPTED-INPUT capture, native 3840x2160, capture/run-01.mp4 0.0-6.0 s. Narration sized to 6.0 s so nothing is retimed. Not a human playtest.",
+      "narration_text": "Straight out of the engine. Enter starts. One fixed jump. Then a real death on the spikes.",
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "estimated_duration_s": 6,
+      "shot": {
+        "type": "CAPTURE",
+        "source": "screen",
+        "label": "Scripted-input capture · native 3840×2160 Godot Movie Maker · run-01 0.0–6.0 s",
+        "show": [
+          {
+            "at": "0.00",
+            "event": "title card, then Enter starts the run"
+          },
+          {
+            "at": "0.40",
+            "event": "run right, clear the starter step, take one cherry"
+          },
+          {
+            "at": "0.75",
+            "event": "walks into the spikes — hazard death, spikes flash, lamp dark"
+          },
+          {
+            "at": "0.90",
+            "event": "automatic retry back at spawn"
+          }
+        ]
+      },
+      "actual_duration_s": 6.0,
+      "audio_file": "mp3/beat-B02.mp3",
+      "render_duration_s": 6.0,
+      "qc": {
+        "full_bleed": true,
+        "full_bleed_reason": "Gameplay capture from a game whose 640x360 viewport fills the frame: hud.gd paints opaque bars on the top and bottom edges and session.gd draws the level to both sides. Edge-to-edge is the composition, not clipping. Declared per beat so it is visible in the diff; every other Gate V check still applies to these frames."
+      },
+      "build": {
+        "status": "VIDEO",
+        "src": "media\\B02.mp4",
+        "filled_by": "media",
+        "at": "2026-09-22T01:47:05"
+      }
+    },
+    {
+      "beat_id": "B03",
+      "act": "MECHANISM",
+      "role_note": "Cause and effect number one, from VERBATIM project source. Why the starter's death showed nothing and this one shows something.",
+      "narration_text": "Why did that death look like anything? In the starter it did not. Killing the player sets enabled to false, and the player's physics function returns on its first line while disabled - so it stops asking to be redrawn and freezes on whatever frame it died on. The starter printed the words and changed nothing. The fix is six lines in the session: advance a counter, ask the player to redraw, ask the level to redraw. No timing, no physics, no collision value moves. The retry window is still the same zero point five five seconds, and the mechanics suite still reports a maximum of thirty-four ticks, bit-identical to the unmodified starter.",
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "estimated_duration_s": 40,
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "remotion",
+        "motion": "code-cue",
+        "remotion": {
+          "pattern": "GodotDevWorkbench",
+          "props": {
+            "mode": "code",
+            "title": "Death you can see.",
+            "project": "walker-jumpman-rui-sun",
+            "path": "godot/game/session.gd",
+            "source": "Verbatim project source at commit 8a4d63d — not a reconstruction",
+            "code": "func _physics_process(delta: float) -> void:\n\tif state == State.DYING:\n\t\tretry_remaining -= delta\n\t\t# player._physics_process returns on its first line while disabled,\n\t\t# so it cannot resume. This only lets the death drawing animate.\n\t\tplayer.dying_tick += 1\n\t\tplayer.queue_redraw()\n\t\tqueue_redraw()\n\t\tif retry_remaining <= 0:\n\t\t\trestart_attempt()",
+            "startLine": 138,
+            "cues": [
+              {
+                "at": 2,
+                "line": 139,
+                "label": "DYING — the 0.55 s retry window the starter already had"
+              },
+              {
+                "at": 8,
+                "line": 140,
+                "label": "unchanged: the window still counts down at the same rate"
+              },
+              {
+                "at": 14,
+                "line": 143,
+                "label": "dying_tick — drawing state only; physics never reads it"
+              },
+              {
+                "at": 21,
+                "line": 144,
+                "label": "the player stopped redrawing itself, so the session drives it"
+              },
+              {
+                "at": 27,
+                "line": 145,
+                "label": "the level redraws too — that is how the spikes flash"
+              },
+              {
+                "at": 33,
+                "line": 147,
+                "label": "restart is untouched: same timing, same counter"
+              }
+            ],
+            "inspectorLabel": "What changed, and what did not",
+            "notes": [
+              {
+                "label": "Before",
+                "value": "HUD text only.\nThe character froze on\nits last drawn frame."
+              },
+              {
+                "label": "After",
+                "value": "Lamp dims and flickers red,\nmast snaps, hull darkens,\nand the guilty hazard flashes."
+              },
+              {
+                "label": "Silhouette",
+                "value": "Unmoved. The art still matches\nthe 18×28 collider on the\nframe the player dies."
+              },
+              {
+                "label": "Regression",
+                "value": "twenty-retries still reports\nmax_retry_ticks 34 — identical\nto the starter's baseline."
+              },
+              {
+                "label": "Prediction",
+                "value": "The brief predicted this would\nbreak pause-freezes. It did not.\nThat stays on the record."
+              }
+            ],
+            "output": [
+              "session.gd → visible death feedback",
+              "no tuning, timing or collision change"
+            ],
+            "durationSeconds": 40
+          },
+          "rendered": {
+            "out": "media/B03.mp4",
+            "at": "2026-09-22T03:31:57.867427+00:00"
+          }
+        }
+      },
+      "actual_duration_s": 34.938,
+      "audio_file": "mp3/beat-B03.mp3",
+      "render_duration_s": 34.96666666666667,
+      "build": {
+        "status": "VIDEO",
+        "src": "media\\B03.mp4",
+        "filled_by": "remotion:GodotDevWorkbench",
+        "at": "2026-09-22T01:47:05"
+      }
+    },
+    {
+      "beat_id": "B04",
+      "act": "GAMEPLAY",
+      "role_note": "SCRIPTED-INPUT capture, capture/run-01.mp4 6.0-18.6 s. Two starter gaps, pause with the clock frozen, the climb, a real missed landing, and a manual R that is not a death. Narration sized to 12.6 s.",
+      "narration_text": "Two gaps, then a chasm with no floor. Escape pauses, and the clock stops with it. On the tower it walks off step one. Missed the landing - a different death. R restarts, and the counter holds.",
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "estimated_duration_s": 13,
+      "shot": {
+        "type": "CAPTURE",
+        "source": "screen",
+        "label": "Scripted-input capture · native 3840×2160 · run-01 6.0–18.6 s",
+        "show": [
+          {
+            "at": "0.05",
+            "event": "crossing the two starter gaps, collecting cherries"
+          },
+          {
+            "at": "0.48",
+            "event": "Escape pauses; the elapsed clock holds at 07.1 s"
+          },
+          {
+            "at": "0.62",
+            "event": "Enter resumes; jump onto the pedestal and step one"
+          },
+          {
+            "at": "0.82",
+            "event": "walks off step one — fall death, 'Missed the landing'"
+          },
+          {
+            "at": "0.94",
+            "event": "R restarts the attempt; RETRIES stays where it was"
+          }
+        ]
+      },
+      "actual_duration_s": 12.6,
+      "audio_file": "mp3/beat-B04.mp3",
+      "render_duration_s": 12.6,
+      "qc": {
+        "full_bleed": true,
+        "full_bleed_reason": "Gameplay capture from a game whose 640x360 viewport fills the frame: hud.gd paints opaque bars on the top and bottom edges and session.gd draws the level to both sides. Edge-to-edge is the composition, not clipping. Declared per beat so it is visible in the diff; every other Gate V check still applies to these frames.",
+        "contrast_regions": [
+          {
+            "label": "pause/menu card text",
+            "box": [
+              0.2547,
+              0.2861,
+              0.7516,
+              0.7278
+            ]
+          }
+        ],
+        "contrast_reason": "The game itself draws a translucent dimming scrim over the whole playfield behind the pause and menu cards (session.gd/hud.gd), which pulls the frame-wide ink/background separation to 0.25-0.26 while the card text stays crisp. The essential text is the card, so contrast is measured there rather than across the dimmed playfield. Verified by eye in _qc/contact_sheet.png: 'Take a breath.' and the menu copy are legible."
+      },
+      "build": {
+        "status": "VIDEO",
+        "src": "media\\B04.mp4",
+        "filled_by": "media",
+        "at": "2026-09-22T01:47:05"
+      }
+    },
+    {
+      "beat_id": "B05",
+      "act": "MECHANISM",
+      "role_note": "The measurement that built the level, and the honest failure it exposed. Numbers are from evidence/reach-*.json.",
+      "narration_text": "None of those landings were placed by arithmetic. A headless harness drops the real player at a take-off position, two pixels at a time, jumps, and records where it actually ends up. It reads nothing from the tuning resource, so a level that only passes because the jump got stronger cannot pass it. The windows came back between fifty-four and eighty-six pixels, and zero of forty ground take-offs crossed the chasm - which is what makes the tower mandatory rather than scenery. The same measurement killed the brief's two-route plan. A twenty-eight pixel player standing on a sixteen pixel platform needs fifty-six pixels of separation before a second lane can exist above it. The measured peak rise is fifty-three point three. No lower lane can ever reach an upper one, so the geometry changed instead of the tuning.",
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "estimated_duration_s": 52,
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "remotion",
+        "motion": "reveal",
+        "remotion": {
+          "pattern": "SkillTeardownMechanism",
+          "props": {
+            "eyebrow": "MEASURED, NOT CALCULATED",
+            "heading": "The harness reads no tuning value.",
+            "body": "verify_reach.gd sweeps the real player's take-off x in 2 px steps and records where it lands.\nMeasured windows: 54–86 px across nine jumps, including the two unchanged starter gaps.\nGate: 0 of 40 ground-level take-offs reach the far side of the chasm — the tower is mandatory.\nFork ruled out: 28 px player + 16 px platform needs 56 px of lane separation; peak rise is 53.3 px.",
+            "verdictLabel": "Gets right: geometry changed, tuning did not.",
+            "verdictPositive": true,
+            "sparkLine": "Fifty-three point three is the ceiling."
+          },
+          "rendered": {
+            "out": "media/B05.mp4",
+            "at": "2026-09-22T03:33:45.848518+00:00"
+          }
+        }
+      },
+      "actual_duration_s": 41.573,
+      "audio_file": "mp3/beat-B05.mp3",
+      "render_duration_s": 41.6,
+      "build": {
+        "status": "VIDEO",
+        "src": "media\\B05.mp4",
+        "filled_by": "remotion:SkillTeardownMechanism",
+        "at": "2026-09-22T01:47:05"
+      }
+    },
+    {
+      "beat_id": "B06",
+      "act": "GAMEPLAY",
+      "role_note": "SCRIPTED-INPUT capture, capture/run-01.mp4 18.6-28.0 s. The clean run: four new landings, the beacon gate, the relocated flag. Narration sized to 9.4 s.",
+      "narration_text": "The clean run. Pedestal, step one, step two, summit - four landings the starter never had. Then the gate, and the flag past it.",
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "estimated_duration_s": 10,
+      "shot": {
+        "type": "CAPTURE",
+        "source": "screen",
+        "label": "Scripted-input capture · native 3840×2160 · run-01 18.6–28.0 s",
+        "show": [
+          {
+            "at": "0.10",
+            "event": "the starter course again, cherries rising on the HUD"
+          },
+          {
+            "at": "0.52",
+            "event": "pedestal, step one, step two over the chasm"
+          },
+          {
+            "at": "0.80",
+            "event": "summit; beacon gate spikes drawn on the platform, not the ground"
+          },
+          {
+            "at": "0.94",
+            "event": "clears the gate and touches the relocated flag"
+          }
+        ]
+      },
+      "actual_duration_s": 9.4,
+      "audio_file": "mp3/beat-B06.mp3",
+      "render_duration_s": 9.4,
+      "qc": {
+        "full_bleed": true,
+        "full_bleed_reason": "Gameplay capture from a game whose 640x360 viewport fills the frame: hud.gd paints opaque bars on the top and bottom edges and session.gd draws the level to both sides. Edge-to-edge is the composition, not clipping. Declared per beat so it is visible in the diff; every other Gate V check still applies to these frames."
+      },
+      "build": {
+        "status": "VIDEO",
+        "src": "media\\B06.mp4",
+        "filled_by": "media",
+        "at": "2026-09-22T01:47:05"
+      }
+    },
+    {
+      "beat_id": "B07",
+      "act": "MECHANISM",
+      "role_note": "Cause and effect number two, from VERBATIM starter source. Why those summit spikes would have been drawn in the wrong place.",
+      "narration_text": "Those spikes on the summit are the second cause and effect, and this is the code that would have got them wrong. This is the starter's, verbatim. It walks the hazard list and draws each triangle between two literal numbers: three hundred and twenty for the base, three hundred and four for the point. Both are the old ground line. The trigger polygons are built from each hazard's own rectangle, so moving a hazard up onto a platform moves what kills you and leaves the picture behind. The summit gate sits at one hundred and eighty-four. Under this code it would have been painted a hundred and thirty-six pixels lower, on the ground, while the thing that kills you waited invisibly on the platform. That is the exact failure the assignment warns about. Drawing now reads each hazard's own top and height, and mirrors the trigger builder parameter for parameter.",
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "estimated_duration_s": 56,
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "remotion",
+        "motion": "code-cue",
+        "remotion": {
+          "pattern": "GodotDevWorkbench",
+          "props": {
+            "mode": "code",
+            "title": "Two literals that lie.",
+            "project": "walker-jumpman (starter)",
+            "path": "godot/game/session.gd — starter, commit bcde8bc",
+            "source": "Verbatim starter source — the code this project replaced",
+            "code": "for entry in level.hazards:\n\tfor i in range(3):\n\t\tvar x: float = entry[0] + i*8\n\t\tdraw_colored_polygon(PackedVector2Array([\n\t\t\tVector2(x,320),\n\t\t\tVector2(x+4,304),\n\t\t\tVector2(x+8,320)]), Color(\"d24e42\"))",
+            "startLine": 198,
+            "cues": [
+              {
+                "at": 4,
+                "line": 198,
+                "label": "reads the hazard list — so the data is right here"
+              },
+              {
+                "at": 13,
+                "line": 200,
+                "label": "spacing hard-coded to 8 px, not the hazard's width"
+              },
+              {
+                "at": 22,
+                "line": 202,
+                "label": "320 — the base, pinned to the old ground line"
+              },
+              {
+                "at": 31,
+                "line": 203,
+                "label": "304 — the point, also the old ground line"
+              },
+              {
+                "at": 41,
+                "line": 204,
+                "label": "the trigger comes from the rect; only the picture is stuck"
+              }
+            ],
+            "inspectorLabel": "What it would have drawn",
+            "notes": [
+              {
+                "label": "Beacon gate",
+                "value": "hazard [1480, 184, 24, 16]\nsits on the summit platform."
+              },
+              {
+                "label": "Under this code",
+                "value": "drawn at y 320→304 — the ground.\n136 px below its own trigger."
+              },
+              {
+                "label": "Consequence",
+                "value": "An invisible killer on the summit\nand a decorative one on the floor."
+              },
+              {
+                "label": "Now",
+                "value": "top = entry[1], base = top + entry[3],\nspacing = entry[2] / 3 — the same\nnumbers _add_area() builds from."
+              },
+              {
+                "label": "Also unpinned",
+                "value": "grid to a literal 961, hills to\n[100,470,770], the flag pole to\n320→250, and the HUD bar to /852."
+              }
+            ],
+            "output": [
+              "hard-coded draw → data-driven draw",
+              "picture and physics now agree"
+            ],
+            "durationSeconds": 56
+          },
+          "rendered": {
+            "out": "media/B07.mp4",
+            "at": "2026-09-22T03:38:17.664688+00:00"
+          }
+        }
+      },
+      "actual_duration_s": 41.231,
+      "audio_file": "mp3/beat-B07.mp3",
+      "render_duration_s": 41.233333333333334,
+      "build": {
+        "status": "VIDEO",
+        "src": "media\\B07.mp4",
+        "filled_by": "remotion:GodotDevWorkbench",
+        "at": "2026-09-22T01:47:05"
+      }
+    },
+    {
+      "beat_id": "B08",
+      "act": "GAMEPLAY",
+      "role_note": "SCRIPTED-INPUT capture, capture/run-01.mp4 28.0-34.3 s. Completion card, replay resetting the attempt, pause to the main menu. Narration sized to 6.3 s.",
+      "narration_text": "Six of six berries. Enter replays and the attempt resets. Escape, then M, back to the menu.",
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "estimated_duration_s": 7,
+      "shot": {
+        "type": "CAPTURE",
+        "source": "screen",
+        "label": "Scripted-input capture · native 3840×2160 · run-01 28.0–34.3 s",
+        "show": [
+          {
+            "at": "0.10",
+            "event": "completion card: 11.2 s drawn, 6 of 6 cherries, 1 retries"
+          },
+          {
+            "at": "0.48",
+            "event": "Enter replays; counters back to zero"
+          },
+          {
+            "at": "0.80",
+            "event": "Escape then M returns to the main menu"
+          }
+        ]
+      },
+      "actual_duration_s": 6.3,
+      "audio_file": "mp3/beat-B08.mp3",
+      "render_duration_s": 6.3,
+      "qc": {
+        "full_bleed": true,
+        "full_bleed_reason": "Gameplay capture from a game whose 640x360 viewport fills the frame: hud.gd paints opaque bars on the top and bottom edges and session.gd draws the level to both sides. Edge-to-edge is the composition, not clipping. Declared per beat so it is visible in the diff; every other Gate V check still applies to these frames.",
+        "contrast_regions": [
+          {
+            "label": "HUD header (always on screen)",
+            "box": [
+              0.0312,
+              0.0222,
+              0.9688,
+              0.1944
+            ]
+          }
+        ],
+        "contrast_reason": "B08 spans completion card -> gameplay -> menu card, and Gate V samples at 50% and 85% of the beat: the 50% sample lands in the gameplay stretch, where no card is on screen, so a card-shaped region is legitimately empty there. The region is therefore the HUD header bar, which hud.gd paints on every frame of this beat as ink on cream. The two cards' own legibility was confirmed by eye in _qc/contact_sheet.png ('Course complete.' and the menu copy are crisp); what the whole-frame heuristic was measuring is the game's own translucent dimming scrim over the playfield, which is not text contrast."
+      },
+      "build": {
+        "status": "VIDEO",
+        "src": "media\\B08.mp4",
+        "filled_by": "media",
+        "at": "2026-09-22T01:47:05"
+      }
+    },
+    {
+      "beat_id": "B09",
+      "act": "VERDICT",
+      "role_note": "Separates observed working features from defects, untested claims and planned work.",
+      "narration_text": "The verdict. Working and shown: the new identity, four new landings, a chasm that gates the flag, both death conditions, pause, manual restart, completion and replay. Measured rather than asserted: every take-off window, and the fact that no ground take-off crosses the chasm. Honest failures: the two-route fork cannot exist at this tuning, and the berries were added to supply that missing choice and do not. Eighty-three to one hundred percent of every safe window collects them anyway, because the player is a body sweeping a parabola, not a point tracing one. Still open: the camera is static for the last three hundred pixels of the climb, it never pans vertically, and exactly one person has played this. A scripted route is not a playtest.",
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "estimated_duration_s": 46,
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "remotion",
+        "motion": "reveal",
+        "remotion": {
+          "pattern": "ClaudeVerdictArtifact",
+          "props": {
+            "artifactTitle": "Verdict",
+            "artifactHeading": "walker-jumpman-rui-sun — shown, measured, and still open",
+            "artifactLines": [
+              "shown working — BEACON's identity in _draw() only; four new landings; a floorless chasm; hazard death and fall death; pause; manual R; completion; replay.",
+              "measured, not claimed — take-off windows 54–86 px from verify_reach.gd sweeping the real player 2 px at a time; 0 of 40 ground take-offs reach the far side of the chasm.",
+              "preserved — tuning.gd and the 18×28 collider untouched. rise_px 56.07470703125 and max_retry_ticks 34 are bit-identical to the unmodified starter's baseline.",
+              "honest failure — the brief's two converging routes cannot exist: a 28 px player on 16 px platforms needs 56 px of lane separation, and the measured peak rise is 53.3 px.",
+              "honest failure — MECH-03 berries were added to supply that missing choice and do not; 83–100% of every safe take-off window collects them, so they are a completion goal, not a risk choice.",
+              "still open — the camera is static for the last ~320 px of the climb, no vertical panning exists, and exactly one human has played this. A scripted route is not a playtest."
+            ]
+          },
+          "rendered": {
+            "out": "media/B09.mp4",
+            "at": "2026-09-22T03:41:25.230333+00:00"
+          }
+        }
+      },
+      "actual_duration_s": 38.373,
+      "audio_file": "mp3/beat-B09.mp3",
+      "render_duration_s": 38.4,
+      "build": {
+        "status": "VIDEO",
+        "src": "media\\B09.mp4",
+        "filled_by": "remotion:ClaudeVerdictArtifact",
+        "at": "2026-09-22T01:47:05"
+      }
+    },
+    {
+      "beat_id": "B10",
+      "act": "HANDOFF",
+      "role_note": "Your Turn - a paste-ready Walker prompt and one concrete experiment. Liam signs off here, before the final card.",
+      "narration_text": "Your turn. Here is the paste-ready prompt. Take a Godot starter and, before you place a single platform, derive from its tuning what a jump actually gives you: peak rise, airtime, and the landing window for a given rise. Then write a harness that sweeps the real player across those windows and tells you the truth. The concrete experiment: add one optional route a competent player can skip, and measure what share of the safe window takes it anyway. If that number comes back near one hundred percent, you built decoration, not a decision - and you will know it before you write the narration instead of after. Liam, in for Bear.",
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "estimated_duration_s": 44,
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "remotion",
+        "motion": "type-on",
+        "remotion": {
+          "pattern": "ClaudeComposerAsk",
+          "props": {
+            "greeting": "Your turn.",
+            "topic": "WALKER · JUMPMAN: BEACON TOWER",
+            "segment": "your turn",
+            "command": "Read this Godot project's tuning resource and derive, before designing anything: peak rise, airtime, flat jump distance, and the landing window for a rise of R. Then write a headless harness that sweeps the real player's take-off position in 2 px steps and reports, per jump, the window that actually lands. Build the level from those measurements. Do not raise jump strength to make geometry fit — change the geometry. Finally, add one optional pickup and measure what share of each safe take-off window collects it anyway.",
+            "runningText": "deriving reach from tuning.gd; sweeping the real player…",
+            "output": [
+              "if a route needs more rise than the tuning gives, the route is wrong — not the tuning",
+              "a pickup collected by 83–100% of safe take-offs is decoration; a decision has to cost something",
+              "distrust the flattering measurement: this project's first cherry sweep read 0–4% and was broken"
+            ],
+            "folderLabel": "@NikBearBrown",
+            "modelLabel": "Claude",
+            "effortLabel": "Opus"
+          },
+          "rendered": {
+            "out": "media/B10.mp4",
+            "at": "2026-09-22T03:43:56.095201+00:00"
+          }
+        }
+      },
+      "actual_duration_s": 33.167,
+      "audio_file": "mp3/beat-B10.mp3",
+      "render_duration_s": 33.2,
+      "build": {
+        "status": "VIDEO",
+        "src": "media\\B10.mp4",
+        "filled_by": "remotion:ClaudeComposerAsk",
+        "at": "2026-09-22T01:47:05"
+      }
+    },
+    {
+      "beat_id": "B11",
+      "act": "OUTRO",
+      "audio_policy": "silence",
+      "audio_policy_note": "Intentional. OUTRO-LOCK.md: 'The outro card is silent under the jingle.' Liam's sign-off is spoken at the end of B10, before this card, so the card itself carries no narration, no gameplay audio and no invented jingle.",
+      "role_note": "OUTRO LOCK - ClaudeTitleOutro, exact episode title, @NikBearBrown, existing slug-seeded jingle. No gameplay audio on this card.",
+      "narration_text": "Liam, in for Bear.",
+      "voice": "am_onyx",
+      "engine": "kokoro",
+      "estimated_duration_s": 7,
+      "shot": {
+        "type": "GRAPHIC",
+        "source": "remotion",
+        "motion": "reveal",
+        "remotion": {
+          "pattern": "ClaudeTitleOutro",
+          "props": {
+            "title": "Walker Jumpman: Beacon Tower.",
+            "slug": "claude-liam-walker-jumpman-rui-sun-walkthrough"
+          },
+          "rendered": {
+            "out": "media/B11.mp4",
+            "at": "2026-09-22T03:44:36.117597+00:00"
+          }
+        }
+      },
+      "actual_duration_s": 7.0,
+      "audio_file": "mp3/beat-B11.mp3",
+      "render_duration_s": 7.0,
+      "build": {
+        "status": "VIDEO",
+        "src": "media\\B11.mp4",
+        "filled_by": "remotion:ClaudeTitleOutro",
+        "at": "2026-09-22T01:47:05"
+      }
+    }
+  ]
+}

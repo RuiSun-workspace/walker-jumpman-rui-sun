@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "game": {
+    "name": "walker-jumpman-rui-sun",
+    "build_id": "1892d76f5d742b612041dd6587f95bcaaa38cc77399eb23e7f88ee0e6cad1732"
+  },
+  "captures": {
+    "run-01": {
+      "path": "capture/run-01.mp4",
+      "sha256": "42eb71711195b5c5d9386ec07f20b7c258ba7232352a594dc2f1203d205bccd8",
+      "build_id": "1892d76f5d742b612041dd6587f95bcaaa38cc77399eb23e7f88ee0e6cad1732",
+      "method": "scripted-input",
+      "input_log": "capture/run-01-inputs.jsonl"
+    }
+  },
+  "features": [
+    {
+      "id": "menu-and-start",
+      "status": "implemented",
+      "evidence": [{
+        "capture": "run-01", "beat_id": "B02",
+        "start_s": 0.0, "action_s": 2.2, "end_s": 3.0,
+        "observation": "The game opens on its own menu card reading 'First steps. Real jumps.' with 'Cross two gaps. Clear the spikes. Climb the tower.' At 2.200 s Enter is pressed and the state changes from MENU to PLAYING; the HUD clock starts from 00.0 s.",
+        "riff": "The card states the whole contract before you touch a key, which is why the film opens on it rather than on a title of its own."
+      }]
+    },
+    {
+      "id": "horizontal-movement",
+      "status": "implemented",
+      "evidence": [{
+        "capture": "run-01", "beat_id": "B02",
+        "start_s": 2.2, "action_s": 2.6, "end_s": 4.4,
+        "observation": "D is held from 2.283 s. The player accelerates right from x=64 and the tread marks scroll against the direction of travel while the larger drive sprocket sits on the leading side.",
+        "riff": "Acceleration is 1280 px/s-squared, so full speed arrives in about 10 px - which is exactly why a run-up is not a decision in this game."
+      }]
+    },
+    {
+      "id": "fixed-height-jump",
+      "status": "implemented",
+      "evidence": [{
+        "capture": "run-01", "beat_id": "B02",
+        "start_s": 2.8, "action_s": 3.3, "end_s": 4.2,
+        "observation": "Space is pressed at take-off mark x=138 and the player clears the starter's 16 px step at x=160-208. The tracks tuck, the lamp brightens and the antenna straightens while airborne.",
+        "riff": "One jump, no double jump, no variable height. Every landing in the film is the same 53.3 px of rise spent differently."
+      }]
+    },
+    {
+      "id": "hazard-death-and-auto-retry",
+      "status": "implemented",
+      "evidence": [{
+        "capture": "run-01", "beat_id": "B02",
+        "start_s": 3.6, "action_s": 4.5, "end_s": 5.9,
+        "observation": "The driver declines to jump and walks into the spike cluster at x=320. At 4.500 s the state becomes DYING with death_reason 'Watch the spikes', the lamp drops to a flickering dim red, the mast folds, and the three spikes that caused it flash bright orange. At 5.300 s the attempt restarts at spawn with RETRIES 01.",
+        "riff": "The starter printed the words and changed nothing on screen; the hazard flash is what turns a text label into a visible cause."
+      }]
+    },
+    {
+      "id": "optional-cherries",
+      "status": "implemented",
+      "evidence": [{
+        "capture": "run-01", "beat_id": "B06",
+        "start_s": 18.6, "action_s": 21.0, "end_s": 27.6,
+        "observation": "The HUD cherry counter rises from 0/6 to 6/6 across the clean run, and the completion card reports '6 of 6 cherries'. Collection never gates the flag.",
+        "riff": "Measured afterwards rather than assumed: 83 to 100 percent of every safe take-off window collects these anyway, so they are a completion goal, not the risk choice they were added to be."
+      }]
+    },
+    {
+      "id": "pause-and-resume",
+      "status": "implemented",
+      "evidence": [{
+        "capture": "run-01", "beat_id": "B04",
+        "start_s": 11.4, "action_s": 12.067, "end_s": 14.4,
+        "observation": "Escape at 12.067 s puts the session in PAUSED and draws 'Take a breath.' The elapsed clock holds at 07.1 s for the whole hold - visible unchanged across the frames at 12.2 s, 12.8 s and 13.3 s. Enter at 13.767 s returns to PLAYING.",
+        "riff": "The frozen clock is the check: pausing has to stop the attempt timer, not just the drawing, and three identical readings show it does."
+      }]
+    },
+    {
+      "id": "fall-death-and-auto-retry",
+      "status": "implemented",
+      "evidence": [{
+        "capture": "run-01", "beat_id": "B04",
+        "start_s": 15.2, "action_s": 16.333, "end_s": 17.6,
+        "observation": "After landing on step one the driver declines to jump and walks off its right edge at x=1256 into the chasm. At 16.333 s the state becomes DYING with death_reason 'Missed the landing' - a different reason from the spike death - and the attempt restarts at spawn.",
+        "riff": "Two separate death conditions: a hazard Area2D overlap, and position.y crossing the fall boundary. The wording on the card is how the player tells them apart."
+      }]
+    },
+    {
+      "id": "manual-restart-is-not-a-death",
+      "status": "implemented",
+      "evidence": [{
+        "capture": "run-01", "beat_id": "B04",
+        "start_s": 17.0, "action_s": 17.733, "end_s": 18.6,
+        "observation": "R is pressed at 17.733 s while running. The player returns to spawn and the HUD retry counter stays at 02 - the driver logged deaths 2 to 2 across the restart.",
+        "riff": "A restart you chose is not a failure you earned, and the counter has to agree with that or the number stops meaning anything."
+      }]
+    },
+    {
+      "id": "new-landings-over-the-chasm",
+      "status": "implemented",
+      "evidence": [{
+        "capture": "run-01", "beat_id": "B06",
+        "start_s": 22.0, "action_s": 24.5, "end_s": 27.4,
+        "observation": "Four landings that do not exist in the starter: pedestal at [1104,296], step one at [1192,280], step two at [1304,240] and the summit at [1416,200]. Step one and step two have no floor beneath them; the chasm runs x=1176 to 1416.",
+        "riff": "Every one of these was placed from a measured take-off window - 54 to 86 px - rather than from the theoretical 106.7 px flat jump, which is permission to build nothing."
+      }]
+    },
+    {
+      "id": "relocated-finish",
+      "status": "implemented",
+      "evidence": [{
+        "capture": "run-01", "beat_id": "B06",
+        "start_s": 26.2, "action_s": 27.533, "end_s": 28.0,
+        "observation": "The flag now stands on the summit at [1584,144], moved from the starter's [916,264]. The player clears the beacon gate spikes at [1480,184] - drawn on the summit platform, not on the ground - and touches the goal at 27.533 s.",
+        "riff": "The spikes being drawn where their trigger actually is, is the whole reason the drawing code stopped using literal coordinates."
+      }]
+    },
+    {
+      "id": "completion-and-replay",
+      "status": "implemented",
+      "evidence": [{
+        "capture": "run-01", "beat_id": "B08",
+        "start_s": 28.0, "action_s": 30.233, "end_s": 32.0,
+        "observation": "The completion card reads '11.2 s / 6 of 6 cherries / 1 retries' as drawn, against the driver's logged run figures of 9.98 s elapsed and 2 retries for the session. Enter at 30.233 s starts a fresh attempt with deaths 0 and cherries 0.",
+        "riff": "The card reports the attempt, the session counter reports the session; reading one as the other is the easiest way to misreport your own game."
+      }]
+    },
+    {
+      "id": "pause-to-main-menu",
+      "status": "implemented",
+      "evidence": [{
+        "capture": "run-01", "beat_id": "B08",
+        "start_s": 31.8, "action_s": 32.733, "end_s": 34.3,
+        "observation": "Escape then M at 32.733 s returns the session to MENU and the start card is drawn again.",
+        "riff": "The menu is reachable from inside a run, which matters more than it sounds: it is the only exit that is not a retry."
+      }]
+    },
+    {
+      "id": "camera-follow",
+      "status": "implemented",
+      "evidence": [{
+        "capture": "run-01", "beat_id": "B06",
+        "start_s": 18.6, "action_s": 23.0, "end_s": 28.0,
+        "observation": "The camera leads in the direction actually travelled and eases toward its target rather than snapping. It is visibly static for the last stretch of the climb, where the clamp pins it at width minus 320.",
+        "riff": "The lead is driven by velocity, not by the facing flag: the facing version shook 97 px under repeated reversal and could also point the wrong way entirely."
+      }]
+    },
+    {
+      "id": "hud-progress-and-counters",
+      "status": "implemented",
+      "evidence": [{
+        "capture": "run-01", "beat_id": "B06",
+        "start_s": 18.6, "action_s": 22.0, "end_s": 28.0,
+        "observation": "The top progress bar fills from spawn to the flag across the run and reaches full exactly at completion; the bottom bar carries CHERRIES n/6, RETRIES nn and the elapsed clock.",
+        "riff": "The bar used to divide by a literal 852, the old level's span, so on a 1664 px course it would have read full at the halfway point."
+      }]
+    },
+    {
+      "id": "coyote-and-input-buffer",
+      "status": "implemented",
+      "evidence": [{
+        "capture": "run-01", "beat_id": "B02",
+        "start_s": 2.8, "action_s": 3.3, "end_s": 4.2,
+        "observation": "Present in every jump in the take as a 6-tick forgiveness window on both leaving the ground and pressing early; it is not separately distinguishable on screen, because a successful ordinary jump looks the same with or without it. Its boundaries are covered by the mechanics suite, which reports inclusive at 6 ticks and expired at 7.",
+        "riff": "Named here rather than dramatised: a film cannot show a tolerance you did not exceed, and pretending a normal jump demonstrates coyote time would be the dishonest option."
+      }]
+    },
+    {
+      "id": "moving-platforms",
+      "status": "planned",
+      "reason": "The starter's GDD explicitly excludes moving platforms from the MVP and none exist in the source. Not built, not shown.",
+      "evidence": []
+    },
+    {
+      "id": "audio-and-mute",
+      "status": "planned",
+      "reason": "GDD SND-001/SND-002 propose jump, pickup, death and finish effects plus music. No audio file exists in the project and nothing loads one, so there is nothing to demonstrate and no sound was fabricated for the film.",
+      "evidence": []
+    },
+    {
+      "id": "settings-and-key-remapping",
+      "status": "planned",
+      "reason": "The GDD proposes persisted mute and key bindings. No settings screen, no persistence and no remapping exist in this slice.",
+      "evidence": []
+    },
+    {
+      "id": "web-export",
+      "status": "planned",
+      "reason": "Proposed in the GDD and named as pending in the starter's BUILD-REPORT. No export was built or tested; this is a source-only release run from the editor or the binary.",
+      "evidence": []
+    },
+    {
+      "id": "full-three-zone-course-and-twenty-cherries",
+      "status": "planned",
+      "reason": "The GDD's full design is three zones with twenty individually identified cherries. This slice implements the MECH-03 mechanic faithfully with six cherries on one extended level; the remaining content is not built.",
+      "evidence": []
+    },
+    {
+      "id": "two-converging-routes",
+      "status": "planned",
+      "reason": "Promised in this project's own CHANGE-BRIEF and then proved impossible at the starter's tuning: a 28 px player on 16 px platforms needs 56 px of vertical lane separation, and the measured peak rise is 53.3 px, so no lower lane can ever reach an upper one. Recorded as revision R1 rather than quietly dropped.",
+      "evidence": []
+    }
+  ]
+}
